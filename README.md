@@ -9,6 +9,14 @@ that follow the [JSONSchema specification](https://json-schema.org). If you alre
 a schema available, creating a widget form for it is as simple
 as this:
 
+```
+from ipywidgets_jsonschema import Form
+form = Form(schema)
+form.show()
+```
+
+The data can then be retrieved from `form` by accessing `form.data`.
+
 ## Features
 
 These are the core features:
