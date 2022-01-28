@@ -1,6 +1,23 @@
-from ipywidgets_jsonschema import Form
+from ipywidgets_jsonschema.form import Form, FormError
+
+import pyrsistent
+import pytest
 
 
 def test_form(testcase):
     form = Form(testcase["schema"])
-    form.data
+
+    # Maybe check that the correct default document was generated
+    if "default" in testcase:
+        assert form.data == pyrsistent.freeze(testcase["default"])
+
+    # Create all valid documents and double check them
+    for doc in testcase.get("valid", []):
+        form.data = pyrsistent.freeze(doc)
+
+    # Ensure that invalid documents throw FormError. Note that documents
+    # that cannot be validated against the given schema will throw a
+    # validation error instead.
+    for doc in testcase.get("invalid", []):
+        with pytest.raises(FormError):
+            form.data = pyrsistent.freeze(doc)

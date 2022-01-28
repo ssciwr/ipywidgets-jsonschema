@@ -1,5 +1,10 @@
 {
+  "default": "foo",
   "schema": {
+    "default": "foo",
     "type": "string"
-  }
+  },
+  "valid": [
+    "Bla"
+  ]
 }

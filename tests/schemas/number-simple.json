@@ -1,0 +1,13 @@
+{
+  "default": 42,
+  "schema": {
+    "default": 42,
+    "type": "number"
+  },
+  "valid": [
+    0.5,
+    0,
+    1000000.0,
+    -5e-10
+  ]
+}

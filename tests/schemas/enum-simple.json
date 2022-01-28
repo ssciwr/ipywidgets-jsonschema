@@ -1,0 +1,16 @@
+{
+  "default": "A",
+  "schema": {
+    "default": "A",
+    "enum": [
+      "A",
+      "B",
+      "C"
+    ],
+    "type": "string"
+  },
+  "valid": [
+    "B",
+    "C"
+  ]
+}
