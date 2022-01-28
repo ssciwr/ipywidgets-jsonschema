@@ -2,7 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ssciwr/ipywidgets-jsonschema/CI)](https://github.com/ssciwr/ipywidgets-jsonschema/actions?query=workflow%3ACI)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ssciwr/ipywidgets-jsonschema/main)
+[![PyPI version](https://badge.fury.io/py/ipywidgets-jsonschema.svg)](https://badge.fury.io/py/ipywidgets-jsonschema)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ssciwr/ipywidgets-jsonschema/main?labpath=demo%2Fdemo.ipynb)
 
 This project allows you to generate Jupyter widgets from schemas
 that follow the [JSONSchema specification](https://json-schema.org). If you already have
