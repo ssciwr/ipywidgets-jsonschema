@@ -86,6 +86,12 @@ class Form:
 
     @data.setter
     def data(self, _data):
+        # Ensure that the given data even validates against the schema
+        jsonschema.validate(
+            instance=pyrsistent.thaw(_data), schema=pyrsistent.thaw(self.schema)
+        )
+
+        # Update all widgets according to the given data
         self._form_element.setter(_data)
 
     def _construct(self, schema, label=None, root=False):
