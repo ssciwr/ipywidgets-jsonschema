@@ -1,0 +1,9 @@
+{
+  "default": "A",
+  "schema": {
+    "enum": [
+      "A"
+    ],
+    "type": "string"
+  }
+}

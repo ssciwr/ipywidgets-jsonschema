@@ -1,0 +1,14 @@
+{
+  "invalid": [
+    "bla_bla",
+    "Bla"
+  ],
+  "schema": {
+    "pattern": "[a-z\\\\-]*",
+    "type": "string"
+  },
+  "valid": [
+    "bla",
+    "bla-bla"
+  ]
+}

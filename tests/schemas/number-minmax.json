@@ -1,0 +1,13 @@
+{
+  "default": 42,
+  "schema": {
+    "default": 42,
+    "maximum": 45,
+    "minimum": 40,
+    "type": "number"
+  },
+  "valid": [
+    40,
+    45
+  ]
+}

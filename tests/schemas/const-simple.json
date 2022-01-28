@@ -1,0 +1,7 @@
+{
+  "default": "foo",
+  "schema": {
+    "const": "foo",
+    "type": "string"
+  }
+}

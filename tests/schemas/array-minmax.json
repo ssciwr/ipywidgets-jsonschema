@@ -1,0 +1,22 @@
+{
+  "default": [
+    ""
+  ],
+  "schema": {
+    "items": {
+      "type": "string"
+    },
+    "maxItems": 2,
+    "minItems": 1,
+    "type": "array"
+  },
+  "valid": [
+    [
+      "foo"
+    ],
+    [
+      "1",
+      "2"
+    ]
+  ]
+}
