@@ -19,7 +19,7 @@ FormElement = collections.namedtuple(
 
 
 class Form:
-    def __init__(self, schema, on_change=None):
+    def __init__(self, schema, on_change=None, vertically_place_labels=False):
         """Create a form with Jupyter widgets from a JSON schema
 
         :param schema:
@@ -45,6 +45,7 @@ class Form:
         # Store the given data members
         self.on_change = on_change
         self.schema = schema
+        self.vertically_place_labels = vertically_place_labels
 
         # Construct the widgets
         self._form_element = self._construct(schema, root=True, label=None)
@@ -61,9 +62,11 @@ class Form:
         """Return the resulting widget for further use"""
         return ipywidgets.VBox(self._form_element.widgets)
 
-    def show(self):
+    def show(self, width="100%"):
         """Show the resulting combined widget in the Jupyter notebook"""
-        w = ipywidgets.VBox(self._form_element.widgets)
+        w = ipywidgets.VBox(
+            self._form_element.widgets, layout=ipywidgets.Layout(width=width)
+        )
         display(w)
 
     @property
@@ -157,7 +160,13 @@ class Form:
         # Construct the label widget that describes the input
         box = [widget]
         if label is not None or "title" in schema:
-            box.insert(0, ipywidgets.Label(schema.get("title", label)))
+            box.insert(
+                0,
+                ipywidgets.Label(
+                    schema.get("title", label),
+                    label=ipywidgets.Layout(width="100%"),
+                ),
+            )
 
         # Apply a potential default
         if "default" in schema:
@@ -205,10 +214,15 @@ class Form:
         # Make sure the widget adapts to the outer layout
         widget.layout = ipywidgets.Layout(width="100%")
 
+        # Make the placing of labels optional
+        box_type = ipywidgets.HBox
+        if self.vertically_place_labels:
+            box_type = ipywidgets.VBox
+
         return self.construct_element(
             getter=_getter,
             setter=_setter,
-            widgets=[ipywidgets.VBox(box)],
+            widgets=[box_type(box)],
         )
 
     def _construct_string(self, schema, label=None, root=False):
