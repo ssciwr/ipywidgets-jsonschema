@@ -1,0 +1,12 @@
+{
+  "default": "foo",
+  "schema": {
+    "default": "foo",
+    "description": "A useless field",
+    "title": "Bar:",
+    "type": "string"
+  },
+  "valid": [
+    "Bla"
+  ]
+}
