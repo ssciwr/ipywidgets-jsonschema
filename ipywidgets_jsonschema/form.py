@@ -19,7 +19,9 @@ FormElement = collections.namedtuple(
 
 
 class Form:
-    def __init__(self, schema, on_change=None, vertically_place_labels=False):
+    def __init__(
+        self, schema, on_change=None, vertically_place_labels=False, use_sliders=False
+    ):
         """Create a form with Jupyter widgets from a JSON schema
 
         :param schema:
@@ -28,6 +30,13 @@ class Form:
             We do *not* implement the full standard, but incrementally add the
             functionality that we need.
         :type schema: dict
+        :param vertically_place_labels:
+            Whether labels for input fields should be placed next to the input widget
+            horizontally or vertically.
+        :type vertically_place_labels: bool
+        :param use_sliders:
+            Whether bounded input fields should use sliders or regular input widgets
+        :type use_sliders: bool
         :param on_change:
             This parameter accepts a callable that will be called whenever
             the widget state of one of the form widgets is changed. The callable
@@ -46,6 +55,7 @@ class Form:
         self.on_change = on_change
         self.schema = schema
         self.vertically_place_labels = vertically_place_labels
+        self.use_sliders = use_sliders
 
         # Construct the widgets
         self._form_element = self._construct(schema, root=True, label=None)
@@ -247,11 +257,14 @@ class Form:
         # Inputs bounded only from below or above are currently not supported
         # in ipywidgets - rather strange
         if "minimum" in schema and "maximum" in schema:
+            _class = (
+                ipywidgets.FloatSlider
+                if self.use_sliders
+                else ipywidgets.BoundedFloatText
+            )
             return self._construct_simple(
                 schema,
-                ipywidgets.BoundedFloatText(
-                    min=schema["minimum"], max=schema["maximum"]
-                ),
+                _class(min=schema["minimum"], max=schema["maximum"]),
                 label=label,
             )
         else:
@@ -261,9 +274,12 @@ class Form:
         # Inputs bounded only from below or above are currently not supported
         # in ipywidgets - rather strange
         if "minimum" in schema and "maximum" in schema:
+            _class = (
+                ipywidgets.IntSlider if self.use_sliders else ipywidgets.BoundedIntText
+            )
             return self._construct_simple(
                 schema,
-                ipywidgets.BoundedIntText(min=schema["minimum"], max=schema["maximum"]),
+                _class(min=schema["minimum"], max=schema["maximum"]),
                 label=label,
             )
         else:
