@@ -191,7 +191,8 @@ class Form:
             )
 
         # Make sure that the widget shows the tooltip
-        widget.tooltip = tooltip
+        if tooltip is not None:
+            widget.tooltip = tooltip
 
         # Apply a potential default
         if "default" in schema:
