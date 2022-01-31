@@ -157,16 +157,31 @@ class Form:
         )
 
     def _construct_simple(self, schema, widget, label=None, root=False):
+        # Extract the best description that we have
+        tooltip = schema.get("description", None)
+
         # Construct the label widget that describes the input
         box = [widget]
         if label is not None or "title" in schema:
+            # Extract the best guess for a title that we have
+            title = schema.get("title", label)
+
+            # Use the label as the backup tooltip
+            if tooltip is None:
+                tooltip = title
+
+            # Prepend a label to the widget
             box.insert(
                 0,
                 ipywidgets.Label(
-                    schema.get("title", label),
+                    title,
                     label=ipywidgets.Layout(width="100%"),
+                    tooltip=tooltip,
                 ),
             )
+
+        # Make sure that the widget shows the tooltip
+        widget.tooltip = tooltip
 
         # Apply a potential default
         if "default" in schema:
