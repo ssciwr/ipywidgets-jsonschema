@@ -287,7 +287,7 @@ class Form:
             return self._construct_simple(schema, ipywidgets.IntText(), label=label)
 
     def _construct_boolean(self, schema, label=None, root=False):
-        return self._construct_simple(schema, ipywidgets.Checkbox(), label=label)
+        return self._construct_simple(schema, ipywidgets.Checkbox(indent=False), label=label)
 
     def _construct_null(self, schema, label=None, root=False):
         return self.construct_element()
