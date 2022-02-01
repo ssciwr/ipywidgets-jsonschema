@@ -1,0 +1,9 @@
+{
+  "default": 42,
+  "schema": {
+    "default": 42,
+    "description": "A fine reference to Douglas Adams",
+    "title": "Answer:",
+    "type": "number"
+  }
+}
