@@ -287,7 +287,12 @@ class Form:
             return self._construct_simple(schema, ipywidgets.IntText(), label=label)
 
     def _construct_boolean(self, schema, label=None, root=False):
-        return self._construct_simple(schema, ipywidgets.Checkbox(indent=False), label=label)
+        if "title" not in schema:
+            raise FormError("Fields of boolean type need to specify title")
+        title = schema.pop("title")
+        return self._construct_simple(
+            schema, ipywidgets.Checkbox(indent=False, description=title), label=None
+        )
 
     def _construct_null(self, schema, label=None, root=False):
         return self.construct_element()
