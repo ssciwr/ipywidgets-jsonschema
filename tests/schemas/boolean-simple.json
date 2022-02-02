@@ -1,0 +1,11 @@
+{
+  "schema": {
+    "default": true,
+    "title": "Some Option",
+    "type": "boolean"
+  },
+  "valid": [
+    true,
+    false
+  ]
+}
