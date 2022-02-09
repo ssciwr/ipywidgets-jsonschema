@@ -19,6 +19,13 @@ FormElement = collections.namedtuple(
 )
 
 
+def as_tuple(obj):
+    if isinstance(obj, collections.abc.Iterable) and not isinstance(obj, str):
+        return obj
+    else:
+        return (obj,)
+
+
 class Form:
     def __init__(self, schema, vertically_place_labels=False, use_sliders=False):
         """Create a form with Jupyter widgets from a JSON schema
@@ -354,6 +361,25 @@ class Form:
                 icon="arrow-down", layout=ipywidgets.Layout(width="33%")
             )
 
+            def trigger_observers():
+                # Adding or removing an entry to this widget should trigger all value change handlers.
+                # As we do not have a proper widget to register the handler, we trigger it
+                # ourselves. This should make proper use of traitlets.
+                for h, n, t in self._observers:
+                    if t == "change" and (n is traitlets.All or "value" in as_tuple(n)):
+                        h(
+                            {
+                                "name": "value",
+                                "old": {},
+                                "new": {},
+                                "owner": None,
+                                "type": "change",
+                            }
+                        )
+
+            # We trigger observers upon adding
+            trigger_observers()
+
             def remove_entry(b):
                 # If we are at the specified minimum, remove should be ignored
                 if "minItems" in schema:
@@ -368,6 +394,9 @@ class Form:
                 # Remove it from the widget list and the handler list
                 vbox.children = vbox.children[:index] + vbox.children[index + 1 :]
                 elements.pop(index)
+
+                # We trigger observers upon removing
+                trigger_observers()
 
             trash.on_click(remove_entry)
 
