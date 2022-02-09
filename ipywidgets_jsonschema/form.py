@@ -51,6 +51,9 @@ class Form:
         self.vertically_place_labels = vertically_place_labels
         self.use_sliders = use_sliders
 
+        # Store a list of registered observers to add them to runtime-generated widgets
+        self._observers = []
+
         # Construct the widgets
         self._form_element = self._construct(schema, root=True, label=None)
 
@@ -72,6 +75,7 @@ class Form:
 
     def observe(self, handler, names=traitlets.All, type="change"):
         """Register a change handler with all the widgets that support it"""
+        self._observers.append((handler, names, type))
         self._form_element.register_observer(handler, names, type)
 
     @property
@@ -331,8 +335,15 @@ class Form:
                 if len(vbox.children) == schema["maxItems"] + 1:
                     return
 
-            elements.insert(0, self._construct(schema["items"], label=None))
+            newelem = self._construct(schema["items"], label=None)
+            elements.insert(0, newelem)
             item = elements[0].widgets[0]
+
+            # Register existing observers
+            for h, n, t in self._observers:
+                newelem.register_observer(h, n, t)
+
+            # Add array controls to our new element
             trash = ipywidgets.Button(
                 icon="trash", layout=ipywidgets.Layout(width="33%")
             )
@@ -455,7 +466,7 @@ class Form:
         widget = ipywidgets.VBox([selector] + elements[0].widgets)
 
         # Whenever there is a change, we switch the subschema widget
-        def _select(change):
+        def _select(_):
             widget.children = [selector] + elements[names.index(selector.value)].widgets
 
         selector.observe(_select)
