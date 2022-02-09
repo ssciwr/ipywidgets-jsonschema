@@ -7,6 +7,7 @@ import json
 import os
 import pyrsistent
 import re
+import traitlets
 
 
 class FormError(Exception):
@@ -14,14 +15,12 @@ class FormError(Exception):
 
 
 FormElement = collections.namedtuple(
-    "FormElement", ["getter", "setter", "widgets", "subelements"]
+    "FormElement", ["getter", "setter", "widgets", "subelements", "register_observer"]
 )
 
 
 class Form:
-    def __init__(
-        self, schema, on_change=None, vertically_place_labels=False, use_sliders=False
-    ):
+    def __init__(self, schema, vertically_place_labels=False, use_sliders=False):
         """Create a form with Jupyter widgets from a JSON schema
 
         :param schema:
@@ -37,10 +36,6 @@ class Form:
         :param use_sliders:
             Whether bounded input fields should use sliders or regular input widgets
         :type use_sliders: bool
-        :param on_change:
-            This parameter accepts a callable that will be called whenever
-            the widget state of one of the form widgets is changed. The callable
-            (currently) accepts no parameters and its return value is ignored.
         """
         # Make sure that the given schema is valid
         filename = os.path.join(
@@ -52,7 +47,6 @@ class Form:
         jsonschema.validate(instance=pyrsistent.thaw(schema), schema=meta_schema)
 
         # Store the given data members
-        self.on_change = on_change
         self.schema = schema
         self.vertically_place_labels = vertically_place_labels
         self.use_sliders = use_sliders
@@ -61,11 +55,24 @@ class Form:
         self._form_element = self._construct(schema, root=True, label=None)
 
     def construct_element(
-        self, getter=lambda: None, setter=lambda _: None, widgets=[], subelements=[]
+        self,
+        getter=lambda: None,
+        setter=lambda _: None,
+        widgets=[],
+        subelements=[],
+        register_observer=lambda h, n, t: None,
     ):
         return FormElement(
-            getter=getter, setter=setter, widgets=widgets, subelements=subelements
+            getter=getter,
+            setter=setter,
+            widgets=widgets,
+            subelements=subelements,
+            register_observer=register_observer,
         )
+
+    def observe(self, handler, names=traitlets.All, type="change"):
+        """Register a change handler with all the widgets that support it"""
+        self._form_element.register_observer(handler, names, type)
 
     @property
     def widget(self):
@@ -159,11 +166,16 @@ class Form:
             for k, v in _d.items():
                 elements[k].setter(v)
 
+        def _register_observer(h, n, t):
+            for e in elements.values():
+                e.register_observer(h, n, t)
+
         return self.construct_element(
             getter=lambda: pyrsistent.m(**{p: e.getter() for p, e in elements.items()}),
             setter=_setter,
             widgets=widget_list,
             subelements=elements,
+            register_observer=_register_observer,
         )
 
     def _construct_simple(self, schema, widget, label=None, root=False):
@@ -212,12 +224,9 @@ class Form:
             pattern = schema.get("pattern", ".*")
             return re.fullmatch(pattern, val)
 
-        # Register a change handler that triggers the forms change handler
-        def _fire_on_change(change):
-            if self.on_change:
-                self.on_change()
-
-        widget.observe(_fire_on_change)
+        # Describe how change handlers are registered
+        def _register_observer(h, n, t):
+            widget.observe(h, names=n, type=t)
 
         def _setter(_d):
             if pattern_checker(_d):
@@ -249,6 +258,7 @@ class Form:
             getter=_getter,
             setter=_setter,
             widgets=[box_type(box)],
+            register_observer=_register_observer,
         )
 
     def _construct_string(self, schema, label=None, root=False):
@@ -400,6 +410,10 @@ class Form:
                 add_entry(None)
                 elements[0].setter(item)
 
+        def _register_observer(h, n, t):
+            for e in elements:
+                e.register_observer(h, n, t)
+
         # If a default was specified, we now set it
         if "default" in schema:
             _setter(schema["default"])
@@ -409,6 +423,7 @@ class Form:
             setter=_setter,
             widgets=wrapped_vbox,
             subelements=elements,
+            register_observer=_register_observer,
         )
 
     def _construct_enum(self, schema, label=None, root=False):
@@ -457,9 +472,14 @@ class Form:
                 except jsonschema.ValidationError:
                     pass
 
+        def _register_observer(h, n, t):
+            for e in elements:
+                e.register_observer(h, n, t)
+
         return self.construct_element(
             getter=lambda: elements[names.index(selector.value)].getter(),
             setter=_setter,
             widgets=[widget],
             subelements=elements,
+            register_observer=_register_observer,
         )
