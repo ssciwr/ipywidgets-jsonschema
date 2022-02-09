@@ -21,3 +21,9 @@ def test_form(testcase):
     for doc in testcase.get("invalid", []):
         with pytest.raises(FormError):
             form.data = pyrsistent.freeze(doc)
+
+
+def test_add_observer(testcase):
+    # Try adding an observer
+    form = Form(testcase["schema"])
+    form.observe(print, names=("value", "selected_index"), type="change")
