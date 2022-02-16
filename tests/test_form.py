@@ -9,18 +9,18 @@ def test_form(testcase):
 
     # Maybe check that the correct default document was generated
     if "default" in testcase:
-        assert form.data == pyrsistent.freeze(testcase["default"])
+        assert pyrsistent.freeze(form.data) == pyrsistent.freeze(testcase["default"])
 
     # Create all valid documents and double check them
     for doc in testcase.get("valid", []):
-        form.data = pyrsistent.freeze(doc)
+        form.data = doc
 
     # Ensure that invalid documents throw FormError. Note that documents
     # that cannot be validated against the given schema will throw a
     # validation error instead.
     for doc in testcase.get("invalid", []):
         with pytest.raises(FormError):
-            form.data = pyrsistent.freeze(doc)
+            form.data = doc
 
 
 def test_add_observer(testcase):

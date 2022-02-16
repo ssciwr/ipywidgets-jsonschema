@@ -24,7 +24,6 @@ These are the core features:
 
 * Generation of `ipywidgets` widgets for all basic types
 * Read and write access to the current document state
-* Immutable documents using `pyrsistent`
 
 ## Installation
 
