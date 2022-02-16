@@ -5,7 +5,6 @@ import ipywidgets
 import jsonschema
 import json
 import os
-import pyrsistent
 import re
 import traitlets
 
@@ -51,7 +50,7 @@ class Form:
         with open(filename, "r") as f:
             meta_schema = json.load(f)
         meta_schema["additionalProperties"] = False
-        jsonschema.validate(instance=pyrsistent.thaw(schema), schema=meta_schema)
+        jsonschema.validate(instance=schema, schema=meta_schema)
 
         # Store the given data members
         self.schema = schema
@@ -109,18 +108,14 @@ class Form:
         data = self._form_element.getter()
 
         # Validate the resulting document just to be sure
-        jsonschema.validate(
-            instance=pyrsistent.thaw(data), schema=pyrsistent.thaw(self.schema)
-        )
+        jsonschema.validate(instance=data, schema=self.schema)
 
         return data
 
     @data.setter
     def data(self, _data):
         # Ensure that the given data even validates against the schema
-        jsonschema.validate(
-            instance=pyrsistent.thaw(_data), schema=pyrsistent.thaw(self.schema)
-        )
+        jsonschema.validate(instance=_data, schema=self.schema)
 
         # Update all widgets according to the given data
         self._form_element.setter(_data)
@@ -182,7 +177,7 @@ class Form:
                 e.register_observer(h, n, t)
 
         return self.construct_element(
-            getter=lambda: pyrsistent.m(**{p: e.getter() for p, e in elements.items()}),
+            getter=lambda: {p: e.getter() for p, e in elements.items()},
             setter=_setter,
             widgets=widget_list,
             subelements=elements,
@@ -459,7 +454,7 @@ class Form:
             _setter(schema["default"])
 
         return self.construct_element(
-            getter=lambda: pyrsistent.pvector(h.getter() for h in elements),
+            getter=lambda: [h.getter() for h in elements],
             setter=_setter,
             widgets=wrapped_vbox,
             subelements=elements,
@@ -503,9 +498,7 @@ class Form:
         def _setter(_d):
             for i, s in enumerate(schema[key]):
                 try:
-                    jsonschema.validate(
-                        instance=pyrsistent.thaw(_d), schema=pyrsistent.thaw(s)
-                    )
+                    jsonschema.validate(instance=_d, schema=s)
                     selector.value = names[i]
                     _select(None)
                     elements[i].setter(_d)
