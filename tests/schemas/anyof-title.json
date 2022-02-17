@@ -1,0 +1,19 @@
+{
+  "schema": {
+    "anyOf": [
+      {
+        "title": "String",
+        "type": "string"
+      },
+      {
+        "title": "Integer",
+        "type": "integer"
+      }
+    ],
+    "title": "Data:"
+  },
+  "valid": [
+    "Foo",
+    42
+  ]
+}
