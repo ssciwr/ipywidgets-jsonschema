@@ -512,6 +512,7 @@ class Form:
                     pass
 
         def _register_observer(h, n, t):
+            selector.observe(h, names=n, type=t)
             for e in elements:
                 e.register_observer(h, n, t)
 
