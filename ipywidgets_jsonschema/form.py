@@ -328,104 +328,155 @@ class Form:
         button = ipywidgets.Button(
             description="Add entry", icon="plus", layout=ipywidgets.Layout(width="100%")
         )
+
+        # Construct the final widget that will be updated by handlers
         vbox = ipywidgets.VBox([button])
+
+        # The subelements of this widget that are referenced in the
+        # recursive implementation of this array element
         elements = []
 
+        # The subwidgets used for each element of the array. This differs
+        # from the widgets of above elements, because it includes added
+        # array controls like move up/down and delete
+        element_widgets = []
+
+        # We separately to store the size of the elements array. The reason
+        # for this is that we do want to minimize the amount of element creations
+        # as these are very costly for complex schemas
+        element_size = 0
+
+        # Trigger whenever the resulting widget needs update
+        def update_widget():
+            vbox.children = sum((e.widgets for e in elements[:element_size]), []) + [
+                button
+            ]
+
         def add_entry(_):
+            nonlocal element_size
+
             # if we are at the specified maximum, add should be ignored
             if "maxItems" in schema:
-                if len(vbox.children) == schema["maxItems"] + 1:
+                if element_size == schema["maxItems"]:
                     return
 
-            newelem = self._construct(schema["items"], label=None)
-            elements.insert(0, newelem)
-            item = elements[0].widgets[0]
+            # A new element should only be generated if we do not have an excess
+            # one stored in the elements list
+            if element_size == len(elements):
 
-            # Register existing observers
-            for h, n, t in self._observers:
-                newelem.register_observer(h, n, t)
+                # Create a new element by going into recursion
+                recelem = self._construct(schema["items"], label=None)
 
-            # Add array controls to our new element
-            trash = ipywidgets.Button(
-                icon="trash", layout=ipywidgets.Layout(width="33%")
-            )
-            up = ipywidgets.Button(
-                icon="arrow-up", layout=ipywidgets.Layout(width="33%")
-            )
-            down = ipywidgets.Button(
-                icon="arrow-down", layout=ipywidgets.Layout(width="33%")
-            )
-
-            def trigger_observers():
-                # Adding or removing an entry to this widget should trigger all value change handlers.
-                # As we do not have a proper widget to register the handler, we trigger it
-                # ourselves. This should make proper use of traitlets.
+                # Register existing observers
                 for h, n, t in self._observers:
-                    if t == "change" and (n is traitlets.All or "value" in as_tuple(n)):
-                        h(
-                            {
-                                "name": "value",
-                                "old": {},
-                                "new": {},
-                                "owner": None,
-                                "type": "change",
-                            }
-                        )
+                    recelem.register_observer(h, n, t)
 
-            # We trigger observers upon adding
-            trigger_observers()
+                # Add array controls to our new element
+                trash = ipywidgets.Button(
+                    icon="trash", layout=ipywidgets.Layout(width="33%")
+                )
+                up = ipywidgets.Button(
+                    icon="arrow-up", layout=ipywidgets.Layout(width="33%")
+                )
+                down = ipywidgets.Button(
+                    icon="arrow-down", layout=ipywidgets.Layout(width="33%")
+                )
 
-            def remove_entry(b):
-                # If we are at the specified minimum, remove should be ignored
-                if "minItems" in schema:
-                    if len(vbox.children) is schema["minItems"]:
-                        return
+                def trigger_observers():
+                    # Adding or removing an entry to this widget should trigger all value change handlers.
+                    # As we do not have a proper widget to register the handler, we trigger it
+                    # ourselves. This should make proper use of traitlets.
+                    for h, n, t in self._observers:
+                        if t == "change" and (
+                            n is traitlets.All or "value" in as_tuple(n)
+                        ):
+                            h(
+                                {
+                                    "name": "value",
+                                    "old": {},
+                                    "new": {},
+                                    "owner": None,
+                                    "type": "change",
+                                }
+                            )
 
-                # Identify the current list index of the entry
-                for index, child in enumerate(vbox.children[:-1]):
-                    if b in child.children[1].children:
-                        break
-
-                # Remove it from the widget list and the handler list
-                vbox.children = vbox.children[:index] + vbox.children[index + 1 :]
-                elements.pop(index)
-
-                # We trigger observers upon removing
+                # We trigger observers upon adding
                 trigger_observers()
 
-            trash.on_click(remove_entry)
+                def remove_entry(b):
+                    nonlocal element_size
 
-            def move(dir):
-                def _move(b):
-                    items = list(vbox.children[:-1])
-                    for i, it in enumerate(items):
-                        if b in it.children[1].children:
-                            newi = min(max(i + dir, 0), len(items) - 1)
-                            items[i], items[newi] = items[newi], items[i]
-                            elements[i], elements[newi] = (
-                                elements[newi],
-                                elements[i],
-                            )
+                    # If we are at the specified minimum, remove should be ignored
+                    if "minItems" in schema:
+                        if element_size == schema["minItems"]:
+                            return
+
+                    # Identify the current list index of the entry
+                    for index, child in enumerate(vbox.children[:-1]):
+                        if b in child.children[1].children:
                             break
 
-                    vbox.children = tuple(items) + (vbox.children[-1],)
+                    # Move the corresponding element to the back of the list
+                    # and reduce the actual size
+                    elements.append(elements.pop(index))
+                    element_size = element_size - 1
 
-                return _move
+                    # Remove it from the widget list and the handler list
+                    update_widget()
 
-            # Register the handler for moving up and down
-            up.on_click(move(-1))
-            down.on_click(move(1))
+                    # We trigger observers upon removing
+                    trigger_observers()
 
-            vbox.children = (
-                ipywidgets.VBox(
+                trash.on_click(remove_entry)
+
+                def move(dir):
+                    def _move(b):
+                        items = list(vbox.children[:-1])
+                        for i, it in enumerate(items):
+                            if b in it.children[1].children:
+                                newi = min(max(i + dir, 0), len(items) - 1)
+                                items[i], items[newi] = items[newi], items[i]
+                                elements[i], elements[newi] = (
+                                    elements[newi],
+                                    elements[i],
+                                )
+                                break
+
+                        update_widget()
+
+                    return _move
+
+                # Register the handler for moving up and down
+                up.on_click(move(-1))
+                down.on_click(move(1))
+
+                # Construct the final widget including array controls
+                array_entry_widget = ipywidgets.VBox(
                     [
-                        item,
+                        recelem.widgets[0].children[0],
                         ipywidgets.HBox(
                             [trash, up, down], layout=ipywidgets.Layout(width="100%")
                         ),
                     ]
-                ),
-            ) + vbox.children
+                )
+
+                # Insert this into the elements list
+                elements.insert(
+                    0,
+                    self.construct_element(
+                        getter=recelem.getter,
+                        setter=recelem.setter,
+                        widgets=[array_entry_widget],
+                        subelements=recelem.subelements,
+                        register_observer=recelem.register_observer,
+                    ),
+                )
+
+            # Regardless of whether we actually constructed an element or whether
+            # we are reusing an existing one - we need to increase the size now
+            element_size = element_size + 1
+
+            update_widget()
 
         button.on_click(add_entry)
 
@@ -439,11 +490,22 @@ class Form:
             wrapped_vbox = self._wrap_accordion(wrapped_vbox, schema, label=label)
 
         def _setter(_d):
-            elements.clear()
-            vbox.children = (vbox.children[-1],)
-            for item in reversed(_d):
-                add_entry(None)
-                elements[0].setter(item)
+            # Size adjustments of our array of elements. Note that we do
+            # do not actually delete excess elements for performance reasons
+            # as these might be expensive to construct.
+            for _ in range(len(_d) - len(elements)):
+                add_entry(_)
+
+            # Set the correct size
+            nonlocal element_size
+            element_size = len(_d)
+
+            # Update the elements
+            for i, item in enumerate(_d):
+                elements[i].setter(item)
+
+            # Finalize the widget
+            update_widget()
 
         def _register_observer(h, n, t):
             for e in elements:
@@ -454,7 +516,7 @@ class Form:
             _setter(schema["default"])
 
         return self.construct_element(
-            getter=lambda: [h.getter() for h in elements],
+            getter=lambda: [h.getter() for h in elements[:element_size]],
             setter=_setter,
             widgets=wrapped_vbox,
             subelements=elements,
