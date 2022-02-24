@@ -254,6 +254,11 @@ class Form:
         # Apply a potential default
         if "default" in schema:
             widget.value = schema["default"]
+        else:
+            if "minimum" in schema:
+                widget.value = schema["minimum"]
+            if "maximum" in schema:
+                widget.value = schema["maximum"]
 
         # Apply potential constant values without generating a widget
         if "const" in schema:
