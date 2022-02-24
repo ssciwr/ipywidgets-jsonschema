@@ -26,7 +26,13 @@ def as_tuple(obj):
 
 
 class Form:
-    def __init__(self, schema, vertically_place_labels=False, use_sliders=False):
+    def __init__(
+        self,
+        schema,
+        vertically_place_labels=False,
+        use_sliders=False,
+        preconstruct_array_items=0,
+    ):
         """Create a form with Jupyter widgets from a JSON schema
 
         :param schema:
@@ -42,6 +48,11 @@ class Form:
         :param use_sliders:
             Whether bounded input fields should use sliders or regular input widgets
         :type use_sliders: bool
+        :param preconstruct_array_items:
+            How many array item widgets should be pre-generated. For very complex
+            subschemas for each array item, this can be a performance optimization
+            trading construction time vs. usage delay.
+        :type preconstruct_array_items: int
         """
         # Make sure that the given schema is valid
         filename = os.path.join(
@@ -56,6 +67,7 @@ class Form:
         self.schema = schema
         self.vertically_place_labels = vertically_place_labels
         self.use_sliders = use_sliders
+        self.preconstruct_array_items = preconstruct_array_items
 
         # Store a list of registered observers to add them to runtime-generated widgets
         self._observers = []
@@ -336,11 +348,6 @@ class Form:
         # recursive implementation of this array element
         elements = []
 
-        # The subwidgets used for each element of the array. This differs
-        # from the widgets of above elements, because it includes added
-        # array controls like move up/down and delete
-        element_widgets = []
-
         # We separately to store the size of the elements array. The reason
         # for this is that we do want to minimize the amount of element creations
         # as these are very costly for complex schemas
@@ -506,6 +513,11 @@ class Form:
 
             # Finalize the widget
             update_widget()
+
+        # Preconstruct array item widgets
+        for _ in range(self.preconstruct_array_items):
+            add_entry()
+        element_size = 0
 
         def _register_observer(h, n, t):
             for e in elements:
