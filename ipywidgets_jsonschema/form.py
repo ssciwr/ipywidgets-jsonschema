@@ -25,6 +25,33 @@ def as_tuple(obj):
         return (obj,)
 
 
+def minmax_schema_rule(widget, schema):
+    """This implements the minimum/maximum rules
+
+    Only used for inputs bounded from one side, as ipywidgets
+    has dedicated widgets for inputs bound from both sides. Defined
+    in a separate function, because it used twice for number and
+    integer widgets.
+    """
+    if "minimum" in schema:
+
+        def min_handler(_):
+            if widget.value < schema["minimum"]:
+                widget.value = schema["minimum"]
+
+        widget.observe(min_handler, names="value")
+
+    if "maximum" in schema:
+
+        def max_handler(_):
+            if widget.value > schema["maximum"]:
+                widget.value = schema["maximum"]
+
+        widget.observe(max_handler, names="value")
+
+    return widget
+
+
 class Form:
     def __init__(
         self,
@@ -227,6 +254,11 @@ class Form:
         # Apply a potential default
         if "default" in schema:
             widget.value = schema["default"]
+        else:
+            if "minimum" in schema:
+                widget.value = schema["minimum"]
+            if "maximum" in schema:
+                widget.value = schema["maximum"]
 
         # Apply potential constant values without generating a widget
         if "const" in schema:
@@ -297,7 +329,8 @@ class Form:
                 label=label,
             )
         else:
-            return self._construct_simple(schema, ipywidgets.FloatText(), label=label)
+            widget = minmax_schema_rule(ipywidgets.FloatText(), schema)
+            return self._construct_simple(schema, widget, label=label)
 
     def _construct_integer(self, schema, label=None, root=False):
         # Inputs bounded only from below or above are currently not supported
@@ -312,7 +345,8 @@ class Form:
                 label=label,
             )
         else:
-            return self._construct_simple(schema, ipywidgets.IntText(), label=label)
+            widget = minmax_schema_rule(ipywidgets.IntText(), schema)
+            return self._construct_simple(schema, widget, label=label)
 
     def _construct_boolean(self, schema, label=None, root=False):
         # Extract the labelling for the checkbox
