@@ -488,8 +488,9 @@ class Form:
         button.on_click(add_entry)
 
         # Initialize the widget with the minimal number of subwidgets
-        for _ in range(schema.get("minItems", 0)):
+        for _ in range(max(schema.get("minItems", 0), self.preconstruct_array_items)):
             add_entry(_)
+        element_size = schema.get("minItems", 0)
 
         # If this is not the root document, we wrap this in an Accordion widget
         wrapped_vbox = [vbox]
@@ -513,11 +514,6 @@ class Form:
 
             # Finalize the widget
             update_widget()
-
-        # Preconstruct array item widgets
-        for _ in range(self.preconstruct_array_items):
-            add_entry()
-        element_size = 0
 
         def _register_observer(h, n, t):
             for e in elements:
