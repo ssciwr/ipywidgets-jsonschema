@@ -534,19 +534,14 @@ class Form:
         def _setter(_d):
             nonlocal element_size
 
-            # Set the array elements that are already present in the widget
-            for i in range(min(element_size, len(_d))):
-                elements[i].setter(_d[i])
+            # We reset element_size so that we can offload all handling of it
+            # to add_entry which already does that.
+            element_size = 0
 
-            # Size adjustments of our array of elements. Note that we do
-            # do not actually delete excess elements for performance reasons
-            # as these might be expensive to construct.
-            for _ in range(len(_d) - len(elements)):
-                add_entry(_)
-                elements[-1].setter(_d[element_size - 1])
-
-            # Finalize the widget
-            update_widget()
+            # Update the widget potentially constructing new ones.
+            for i, item in enumerate(_d):
+                add_entry(None)
+                elements[i].setter(item)
 
         def _register_observer(h, n, t):
             for e in elements:
