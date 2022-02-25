@@ -4,8 +4,9 @@ import pyrsistent
 import pytest
 
 
-def test_form(testcase):
-    form = Form(testcase["schema"])
+@pytest.mark.parametrize("preconstruct", (0, 1))
+def test_form(testcase, preconstruct):
+    form = Form(testcase["schema"], preconstruct_array_items=preconstruct)
 
     # Maybe check that the correct default document was generated
     if "default" in testcase:
