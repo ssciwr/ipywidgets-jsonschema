@@ -1,0 +1,353 @@
+{
+  "schema": {
+    "$id": "file:///opt/conda/lib/python3.9/site-packages/adaptivefiltering/schema/",
+    "properties": {
+      "filters": {
+        "items": {
+          "$id": "file:///opt/conda/lib/python3.9/site-packages/adaptivefiltering/schema/",
+          "anyOf": [
+            {
+              "properties": {
+                "_backend": {
+                  "const": "pdal",
+                  "type": "string"
+                },
+                "cell": {
+                  "default": 10.0,
+                  "title": "Cell size",
+                  "type": "number"
+                },
+                "class": {
+                  "default": 7,
+                  "description": "Classification value to apply to noise points",
+                  "title": "Class value",
+                  "type": "integer"
+                },
+                "threshold": {
+                  "default": 1.0,
+                  "description": "Threshold value to identify low noise points",
+                  "title": "Threshold",
+                  "type": "number"
+                },
+                "type": {
+                  "const": "filters.elm",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "Extended Local Minimum filter (PDAL)",
+              "type": "object"
+            },
+            {
+              "properties": {
+                "_backend": {
+                  "const": "pdal",
+                  "type": "string"
+                },
+                "class": {
+                  "default": 7,
+                  "description": "The classification value to apply to outliers",
+                  "title": "Class value",
+                  "type": "integer"
+                },
+                "mean_k": {
+                  "default": 8,
+                  "title": "Mean number of neighbors",
+                  "type": "integer"
+                },
+                "method": {
+                  "const": "statistical",
+                  "type": "string"
+                },
+                "multiplier": {
+                  "default": 2.0,
+                  "title": "Standard deviation threshold",
+                  "type": "number"
+                },
+                "type": {
+                  "const": "filters.outlier",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "Statistical Outlier Filter (PDAL)",
+              "type": "object"
+            },
+            {
+              "properties": {
+                "_backend": {
+                  "const": "pdal",
+                  "type": "string"
+                },
+                "class": {
+                  "default": 7,
+                  "description": "The classification value to apply to outliers",
+                  "title": "Class value",
+                  "type": "integer"
+                },
+                "method": {
+                  "const": "radius",
+                  "type": "string"
+                },
+                "min_k": {
+                  "default": 2,
+                  "title": "Minimum number of neighbors in radius",
+                  "type": "integer"
+                },
+                "radius": {
+                  "default": 1.0,
+                  "title": "Radius",
+                  "type": "number"
+                },
+                "type": {
+                  "const": "filters.outlier",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "Radius Outlier Filter (PDAL)",
+              "type": "object"
+            },
+            {
+              "properties": {
+                "_backend": {
+                  "const": "pdal",
+                  "type": "string"
+                },
+                "type": {
+                  "const": "filters.skewnessbalancing",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "Skewness Balancing (PDAL)",
+              "type": "object"
+            },
+            {
+              "properties": {
+                "_backend": {
+                  "const": "pdal",
+                  "type": "string"
+                },
+                "cell_size": {
+                  "default": 1.0,
+                  "title": "Cell size",
+                  "type": "number"
+                },
+                "exponential": {
+                  "default": true,
+                  "description": "Use exponential growth for window sizes?",
+                  "title": "Exponential",
+                  "type": "boolean"
+                },
+                "initial_distance": {
+                  "default": 0.15,
+                  "title": "Initial distance",
+                  "type": "number"
+                },
+                "max_distance": {
+                  "default": 2.5,
+                  "title": "Maximum distance",
+                  "type": "number"
+                },
+                "max_window_size": {
+                  "default": 33.0,
+                  "title": "Max Window size",
+                  "type": "number"
+                },
+                "returns": {
+                  "default": "last,only",
+                  "description": "Comma-separated list of return types into which data should be segmented. Valid groups are \u201clast\u201d, \u201cfirst\u201d, \u201cintermediate\u201d and \u201conly\u201d.",
+                  "title": "Return types",
+                  "type": "string"
+                },
+                "slope": {
+                  "default": 1.0,
+                  "title": "Slope",
+                  "type": "number"
+                },
+                "type": {
+                  "const": "filters.pmf",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "Progressive Morphological Filter (PMF) (PDAL)",
+              "type": "object"
+            },
+            {
+              "properties": {
+                "_backend": {
+                  "const": "pdal",
+                  "type": "string"
+                },
+                "cell": {
+                  "default": 1.0,
+                  "title": "Cell size",
+                  "type": "number"
+                },
+                "cut": {
+                  "default": 0.0,
+                  "description": "Cut net size (cut=0 skips the net cutting step).",
+                  "title": "Cut net size",
+                  "type": "number"
+                },
+                "returns": {
+                  "default": "last,only",
+                  "description": "Return types to include in output. Valid values are \u201cfirst\u201d, \u201clast\u201d, \u201cintermediate\u201d and \u201conly\u201d.",
+                  "title": "Return types",
+                  "type": "string"
+                },
+                "scalar": {
+                  "default": 1.25,
+                  "title": "Elevation scalar",
+                  "type": "number"
+                },
+                "slope": {
+                  "default": 0.15,
+                  "description": "Slope (rise over run)",
+                  "title": "Slope",
+                  "type": "number"
+                },
+                "threshold": {
+                  "default": 0.5,
+                  "title": "Elevation Threshold",
+                  "type": "number"
+                },
+                "type": {
+                  "const": "filters.smrf",
+                  "type": "string"
+                },
+                "window": {
+                  "default": 18.0,
+                  "title": "Max Window size",
+                  "type": "number"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "Simple Morphological Filter (SMRF) (PDAL)",
+              "type": "object"
+            },
+            {
+              "properties": {
+                "_backend": {
+                  "const": "pdal",
+                  "type": "string"
+                },
+                "iterations": {
+                  "default": 500,
+                  "description": "Maximum number of iterations",
+                  "title": "Iterations",
+                  "type": "integer"
+                },
+                "resolution": {
+                  "default": 1.0,
+                  "title": "Cloth Resolution",
+                  "type": "number"
+                },
+                "returns": {
+                  "default": "last,only",
+                  "description": "Return types to include in output. Valid values are \u201cfirst\u201d, \u201clast\u201d, \u201cintermediate\u201d and \u201conly\u201d.",
+                  "title": "Return types",
+                  "type": "string"
+                },
+                "rigidness": {
+                  "default": 3.0,
+                  "title": "Rigidness",
+                  "type": "number"
+                },
+                "smooth": {
+                  "default": true,
+                  "description": "Perform slope post-processing?",
+                  "title": "Smoothness",
+                  "type": "boolean"
+                },
+                "step": {
+                  "default": 0.65,
+                  "title": "Time step",
+                  "type": "number"
+                },
+                "threshold": {
+                  "default": 0.5,
+                  "title": "Classification threshold",
+                  "type": "number"
+                },
+                "type": {
+                  "const": "filters.csf",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "Cloth Simulation Filter (PDAL)",
+              "type": "object"
+            }
+          ]
+        },
+        "title": "Pipeline stages",
+        "type": "array"
+      },
+      "metadata": {
+        "properties": {
+          "author": {
+            "description": "The author of this filter pipeline, used as a filtering criterion in pipeline browsing",
+            "title": "Author",
+            "type": "string"
+          },
+          "description": {
+            "description": "A description of the filtering pipeline: What terrain is it suited best for?",
+            "title": "Description",
+            "type": "string"
+          },
+          "example_data_url": {
+            "description": "An optional URL to a public data set that illustrates the qualities of this pipeline",
+            "title": "Example data set URL",
+            "type": "string"
+          },
+          "keywords": {
+            "description": "A set of keywords that describes the filtering pipeline, only use lowercase letters and dashes!",
+            "items": {
+              "pattern": "[a-z\\-]*",
+              "type": "string"
+            },
+            "title": "Keywords:",
+            "type": "array"
+          },
+          "title": {
+            "description": "A good descriptive name for the filter pipeline",
+            "title": "Filter pipeline name:",
+            "type": "string"
+          }
+        },
+        "title": "Pipeline Metadata",
+        "type": "object"
+      }
+    },
+    "type": "object"
+  },
+  "valid": [
+    {
+      "filters": [
+        {
+          "type": "filters.smrf"
+        },
+        {
+          "type": "filters.smrf"
+        }
+      ]
+    }
+  ]
+}

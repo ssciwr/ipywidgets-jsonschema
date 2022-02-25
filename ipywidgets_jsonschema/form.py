@@ -502,15 +502,14 @@ class Form:
                 )
 
                 # Insert this into the elements list
-                elements.insert(
-                    0,
+                elements.append(
                     self.construct_element(
                         getter=recelem.getter,
                         setter=recelem.setter,
                         widgets=[array_entry_widget],
                         subelements=recelem.subelements,
                         register_observer=recelem.register_observer,
-                    ),
+                    )
                 )
 
             # Regardless of whether we actually constructed an element or whether
@@ -525,6 +524,7 @@ class Form:
         for _ in range(max(schema.get("minItems", 0), self.preconstruct_array_items)):
             add_entry(_)
         element_size = schema.get("minItems", 0)
+        update_widget()
 
         # If this is not the root document, we wrap this in an Accordion widget
         wrapped_vbox = [vbox]
@@ -532,22 +532,16 @@ class Form:
             wrapped_vbox = self._wrap_accordion(wrapped_vbox, schema, label=label)
 
         def _setter(_d):
-            # Size adjustments of our array of elements. Note that we do
-            # do not actually delete excess elements for performance reasons
-            # as these might be expensive to construct.
-            for _ in range(len(_d) - len(elements)):
-                add_entry(_)
-
-            # Set the correct size
             nonlocal element_size
-            element_size = len(_d)
 
-            # Update the elements
+            # We reset element_size so that we can offload all handling of it
+            # to add_entry which already does that.
+            element_size = 0
+
+            # Update the widget potentially constructing new ones.
             for i, item in enumerate(_d):
+                add_entry(None)
                 elements[i].setter(item)
-
-            # Finalize the widget
-            update_widget()
 
         def _register_observer(h, n, t):
             for e in elements:
