@@ -337,5 +337,17 @@
       }
     },
     "type": "object"
-  }
+  },
+  "valid": [
+    {
+      "filters": [
+        {
+          "type": "filters.smrf"
+        },
+        {
+          "type": "filters.smrf"
+        }
+      ]
+    }
+  ]
 }
