@@ -2,6 +2,7 @@
   "default": [],
   "schema": {
     "items": {
+      "default": "foo",
       "type": "string"
     },
     "type": "array"
