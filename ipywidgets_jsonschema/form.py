@@ -522,17 +522,12 @@ class Form:
                     ]
                 )
 
+                # Modify recelem to our needs
+                elemdict = recelem._asdict()
+                elemdict["widgets"] = [array_entry_widget]
+
                 # Insert this into the elements list
-                elements.append(
-                    self.construct_element(
-                        getter=recelem.getter,
-                        setter=recelem.setter,
-                        resetter=recelem.resetter,
-                        widgets=[array_entry_widget],
-                        subelements=recelem.subelements,
-                        register_observer=recelem.register_observer,
-                    )
-                )
+                elements.append(self.construct_element(**elemdict))
 
             # Maybe reset it to the default
             elements[element_size].resetter()
