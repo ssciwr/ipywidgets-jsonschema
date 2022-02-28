@@ -59,6 +59,7 @@ class Form:
         vertically_place_labels=False,
         use_sliders=False,
         preconstruct_array_items=0,
+        sorter=sorted,
     ):
         """Create a form with Jupyter widgets from a JSON schema
 
@@ -80,6 +81,9 @@ class Form:
             subschemas for each array item, this can be a performance optimization
             trading construction time vs. usage delay.
         :type preconstruct_array_items: int
+        :param sorter:
+            A function that is used to sort the keys in a dictionary. Defaults to
+            the built-in sorted, but is no-op if sorted raises a TypeError.
         """
         # Make sure that the given schema is valid
         filename = os.path.join(
@@ -95,6 +99,7 @@ class Form:
         self.vertically_place_labels = vertically_place_labels
         self.use_sliders = use_sliders
         self.preconstruct_array_items = preconstruct_array_items
+        self.sorter = sorter
 
         # Store a list of registered observers to add them to runtime-generated widgets
         self._observers = []
@@ -202,8 +207,16 @@ class Form:
         for prop, subschema in schema["properties"].items():
             elements[prop] = self._construct(subschema, label=prop)
 
+        # Apply sorting to the keys
+        keys = schema["properties"].keys()
+        try:
+            keys = self.sorter(keys)
+        except TypeError:
+            # If the keys cannot be compared, we stick to the original order
+            pass
+
         # If this is not the root document, we wrap this in an Accordion widget
-        widget_list = sum((e.widgets for e in elements.values()), [])
+        widget_list = sum((elements[k].widgets for k in keys), [])
         if not root:
             widget_list = self._wrap_accordion(widget_list, schema, label=label)
 

@@ -1,0 +1,26 @@
+{
+  "default": {
+    "bar": 42,
+    "foo": "bar"
+  },
+  "schema": {
+    "properties": {
+      "bar": {
+        "default": 42,
+        "type": "integer"
+      },
+      "foo": {
+        "default": "bar",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "valid": [
+    {},
+    {
+      "bar": 12,
+      "foo": "blubb"
+    }
+  ]
+}
