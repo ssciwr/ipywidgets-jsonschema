@@ -534,15 +534,15 @@ class Form:
                     )
                 )
 
-            # Trigger observes when item is added regardless whether it was preconstructed
-            trigger_observers()
-
             # Maybe reset it to the default
             elements[element_size].resetter()
 
             # Regardless of whether we actually constructed an element or whether
             # we are reusing an existing one - we need to increase the size now
             element_size = element_size + 1
+
+            # Trigger observes when item is added regardless whether it was preconstructed
+            trigger_observers()
 
             update_widget()
 
