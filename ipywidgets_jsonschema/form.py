@@ -427,6 +427,22 @@ class Form:
                 if element_size == schema["maxItems"]:
                     return
 
+            def trigger_observers():
+                # Adding or removing an entry to this widget should trigger all value change handlers.
+                # As we do not have a proper widget to register the handler, we trigger it
+                # ourselves. This should make proper use of traitlets.
+                for h, n, t in self._observers:
+                    if t == "change" and (n is traitlets.All or "value" in as_tuple(n)):
+                        h(
+                            {
+                                "name": "value",
+                                "old": {},
+                                "new": {},
+                                "owner": None,
+                                "type": "change",
+                            }
+                        )
+
             # A new element should only be generated if we do not have an excess
             # one stored in the elements list
             if element_size == len(elements):
@@ -448,27 +464,6 @@ class Form:
                 down = ipywidgets.Button(
                     icon="arrow-down", layout=ipywidgets.Layout(width="33%")
                 )
-
-                def trigger_observers():
-                    # Adding or removing an entry to this widget should trigger all value change handlers.
-                    # As we do not have a proper widget to register the handler, we trigger it
-                    # ourselves. This should make proper use of traitlets.
-                    for h, n, t in self._observers:
-                        if t == "change" and (
-                            n is traitlets.All or "value" in as_tuple(n)
-                        ):
-                            h(
-                                {
-                                    "name": "value",
-                                    "old": {},
-                                    "new": {},
-                                    "owner": None,
-                                    "type": "change",
-                                }
-                            )
-
-                # We trigger observers upon adding
-                trigger_observers()
 
                 def remove_entry(b):
                     nonlocal element_size
@@ -538,6 +533,9 @@ class Form:
                         register_observer=recelem.register_observer,
                     )
                 )
+
+            # Trigger observes when item is added regardless whether it was preconstructed
+            trigger_observers()
 
             # Maybe reset it to the default
             elements[element_size].resetter()
