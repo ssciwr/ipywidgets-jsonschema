@@ -14,7 +14,8 @@ class FormError(Exception):
 
 
 FormElement = collections.namedtuple(
-    "FormElement", ["getter", "setter", "widgets", "subelements", "register_observer"]
+    "FormElement",
+    ["getter", "setter", "resetter", "widgets", "subelements", "register_observer"],
 )
 
 
@@ -111,6 +112,7 @@ class Form:
         self,
         getter=lambda: None,
         setter=lambda _: None,
+        resetter=lambda: None,
         widgets=[],
         subelements=[],
         register_observer=lambda h, n, t: None,
@@ -118,6 +120,7 @@ class Form:
         return FormElement(
             getter=getter,
             setter=setter,
+            resetter=resetter,
             widgets=widgets,
             subelements=subelements,
             register_observer=register_observer,
@@ -228,9 +231,14 @@ class Form:
             for e in elements.values():
                 e.register_observer(h, n, t)
 
+        def _resetter():
+            for e in elements.values():
+                e.resetter()
+
         return self.construct_element(
             getter=lambda: {p: e.getter() for p, e in elements.items()},
             setter=_setter,
+            resetter=_resetter,
             widgets=widget_list,
             subelements=elements,
             register_observer=_register_observer,
@@ -264,15 +272,6 @@ class Form:
         if tooltip is not None:
             widget.tooltip = tooltip
 
-        # Apply a potential default
-        if "default" in schema:
-            widget.value = schema["default"]
-        else:
-            if "minimum" in schema:
-                widget.value = schema["minimum"]
-            if "maximum" in schema:
-                widget.value = schema["maximum"]
-
         # Apply potential constant values without generating a widget
         if "const" in schema:
             return self.construct_element(getter=lambda: schema["const"])
@@ -300,6 +299,16 @@ class Form:
                     f"Value '{_d}' does not match the specified pattern '{schema['pattern']}'"
                 )
 
+        def _resetter():
+            # Apply a potential default
+            if "default" in schema:
+                widget.value = schema["default"]
+            else:
+                if "minimum" in schema:
+                    widget.value = schema["minimum"]
+                if "maximum" in schema:
+                    widget.value = schema["maximum"]
+
         def _getter():
             if not pattern_checker(widget.value):
                 # We will have to see whether or not throwing is a good idea here
@@ -308,6 +317,9 @@ class Form:
                 )
 
             return widget.value
+
+        # Trigger generation of defaults in construction
+        _resetter()
 
         # Make sure the widget adapts to the outer layout
         widget.layout = ipywidgets.Layout(width="100%")
@@ -320,6 +332,7 @@ class Form:
         return self.construct_element(
             getter=_getter,
             setter=_setter,
+            resetter=_resetter,
             widgets=[box_type(box)],
             register_observer=_register_observer,
         )
@@ -519,11 +532,15 @@ class Form:
                     self.construct_element(
                         getter=recelem.getter,
                         setter=recelem.setter,
+                        resetter=recelem.resetter,
                         widgets=[array_entry_widget],
                         subelements=recelem.subelements,
                         register_observer=recelem.register_observer,
                     )
                 )
+
+            # Maybe reset it to the default
+            elements[element_size].resetter()
 
             # Regardless of whether we actually constructed an element or whether
             # we are reusing an existing one - we need to increase the size now
@@ -560,13 +577,15 @@ class Form:
             for e in elements:
                 e.register_observer(h, n, t)
 
-        # If a default was specified, we now set it
-        if "default" in schema:
-            _setter(schema["default"])
+        def _resetter():
+            # If a default was specified, we now set it
+            if "default" in schema:
+                _setter(schema["default"])
 
         return self.construct_element(
             getter=lambda: [h.getter() for h in elements[:element_size]],
             setter=_setter,
+            resetter=_resetter,
             widgets=wrapped_vbox,
             subelements=elements,
             register_observer=_register_observer,
@@ -622,6 +641,10 @@ class Form:
                 except jsonschema.ValidationError:
                     pass
 
+        def _resetter():
+            for e in elements:
+                e.resetter()
+
         def _register_observer(h, n, t):
             selector.observe(h, names=n, type=t)
             for e in elements:
@@ -630,6 +653,7 @@ class Form:
         return self.construct_element(
             getter=lambda: elements[names.index(selector.value)].getter(),
             setter=_setter,
+            resetter=_resetter,
             widgets=[ipywidgets.VBox(children=title + [widget])],
             subelements=elements,
             register_observer=_register_observer,
