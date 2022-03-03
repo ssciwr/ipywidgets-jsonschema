@@ -224,8 +224,11 @@ class Form:
             widget_list = self._wrap_accordion(widget_list, schema, label=label)
 
         def _setter(_d):
-            for k, v in _d.items():
-                elements[k].setter(v)
+            for k in schema["properties"].keys():
+                if k in _d:
+                    elements[k].setter(_d[k])
+                else:
+                    elements[k].resetter()
 
         def _register_observer(h, n, t):
             for e in elements.values():
