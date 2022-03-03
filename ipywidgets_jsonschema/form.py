@@ -304,6 +304,7 @@ class Form:
             if "default" in schema:
                 widget.value = schema["default"]
             else:
+                widget.value = widget.trait_defaults()["value"]
                 if "minimum" in schema:
                     widget.value = schema["minimum"]
                 if "maximum" in schema:
