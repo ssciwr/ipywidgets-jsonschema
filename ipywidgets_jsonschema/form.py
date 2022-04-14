@@ -345,6 +345,9 @@ class Form:
         return self._construct_simple(schema, ipywidgets.Text(), label=label)
 
     def _construct_number(self, schema, label=None, root=False):
+        kwargs = dict()
+        if "multipleOf" in schema:
+            kwargs["step"] = schema["multipleOf"]
         # Inputs bounded only from below or above are currently not supported
         # in ipywidgets - rather strange
         if "minimum" in schema and "maximum" in schema:
@@ -355,14 +358,17 @@ class Form:
             )
             return self._construct_simple(
                 schema,
-                _class(min=schema["minimum"], max=schema["maximum"]),
+                _class(min=schema["minimum"], max=schema["maximum"], **kwargs),
                 label=label,
             )
         else:
-            widget = minmax_schema_rule(ipywidgets.FloatText(), schema)
+            widget = minmax_schema_rule(ipywidgets.FloatText(**kwargs), schema)
             return self._construct_simple(schema, widget, label=label)
 
     def _construct_integer(self, schema, label=None, root=False):
+        kwargs = dict()
+        if "multipleOf" in schema:
+            kwargs["step"] = schema["multipleOf"]
         # Inputs bounded only from below or above are currently not supported
         # in ipywidgets - rather strange
         if "minimum" in schema and "maximum" in schema:
@@ -371,11 +377,11 @@ class Form:
             )
             return self._construct_simple(
                 schema,
-                _class(min=schema["minimum"], max=schema["maximum"]),
+                _class(min=schema["minimum"], max=schema["maximum"], **kwargs),
                 label=label,
             )
         else:
-            widget = minmax_schema_rule(ipywidgets.IntText(), schema)
+            widget = minmax_schema_rule(ipywidgets.IntText(**kwargs), schema)
             return self._construct_simple(schema, widget, label=label)
 
     def _construct_boolean(self, schema, label=None, root=False):
