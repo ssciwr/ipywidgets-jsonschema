@@ -1,19 +1,17 @@
 from IPython.display import display
+from packaging import version
 
 import collections
 import ipywidgets
 import jsonschema
 import json
 import os
-import packaging
 import re
 import traitlets
 
 
 # We are providing some compatibility for ipywidgets v7 and v8
-IS_VERSION_8 = packaging.version.parse(
-    ipywidgets.__version__
-) >= packaging.version.parse("8")
+IS_VERSION_8 = version.parse(ipywidgets.__version__) >= version.parse("8")
 
 
 class FormError(Exception):
