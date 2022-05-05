@@ -1,4 +1,5 @@
 from IPython.display import display
+from packaging import version
 
 import collections
 import ipywidgets
@@ -7,6 +8,10 @@ import json
 import os
 import re
 import traitlets
+
+
+# We are providing some compatibility for ipywidgets v7 and v8
+IS_VERSION_8 = version.parse(ipywidgets.__version__) >= version.parse("8")
 
 
 class FormError(Exception):
@@ -196,9 +201,15 @@ class Form:
         titles = []
         if label is not None or "title" in schema:
             titles = [schema.get("title", label)]
-        accordion = ipywidgets.Accordion(
-            children=[ipywidgets.VBox(widget_list)], titles=titles
-        )
+
+        if IS_VERSION_8:
+            accordion = ipywidgets.Accordion(
+                children=[ipywidgets.VBox(widget_list)], titles=titles
+            )
+        else:
+            accordion = ipywidgets.Accordion(children=[ipywidgets.VBox(widget_list)])
+            for i, title in enumerate(titles):
+                accordion.set_title(i, title)
 
         # This folds the accordion
         accordion.selected_index = None
