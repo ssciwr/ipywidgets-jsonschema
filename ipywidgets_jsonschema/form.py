@@ -11,7 +11,7 @@ import traitlets
 
 
 # We are providing some compatibility for ipywidgets v7 and v8
-IS_VERSION_8 = version.parse(ipywidgets.__version__) >= version.parse("8")
+IS_VERSION_8 = version.parse(ipywidgets.__version__).major == 8
 
 
 class FormError(Exception):
