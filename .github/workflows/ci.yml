@@ -38,7 +38,7 @@ jobs:
 
     - name: Install package and development dependencies
       run: |
-        python -m pip install ipywidgets${{ matrix.ipywidgets }}
+        python -m pip install "ipywidgets${{ matrix.ipywidgets }}"
         python -m pip install .
         python -m pip install -r requirements-dev.txt
 
