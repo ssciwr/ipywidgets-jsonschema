@@ -25,7 +25,7 @@ jobs:
           - "3.10"
         ipywidgets:
           - "<8"
-          - "==8.0.0rc0"
+          - ">=8,<9"
 
     steps:
     - name: Checkout repository
