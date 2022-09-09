@@ -1,0 +1,16 @@
+{
+  "default": [
+    "foo",
+    "bar"
+  ],
+  "schema": {
+    "default": [
+      "foo",
+      "bar"
+    ],
+    "items": {
+      "type": "string"
+    },
+    "type": "array"
+  }
+}

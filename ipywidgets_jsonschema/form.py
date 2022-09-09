@@ -603,6 +603,9 @@ class Form:
             if "default" in schema:
                 _setter(schema["default"])
 
+        # Initially call the resetter
+        _resetter()
+
         return self.construct_element(
             getter=lambda: [h.getter() for h in elements[:element_size]],
             setter=_setter,
