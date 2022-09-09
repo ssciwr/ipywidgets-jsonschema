@@ -1,5 +1,6 @@
 from ipywidgets_jsonschema.form import Form, FormError
 
+import jsonschema
 import pyrsistent
 import pytest
 
@@ -20,7 +21,7 @@ def test_form(testcase, preconstruct):
     # that cannot be validated against the given schema will throw a
     # validation error instead.
     for doc in testcase.get("invalid", []):
-        with pytest.raises(FormError):
+        with pytest.raises((FormError, jsonschema.ValidationError)):
             form.data = doc
 
 
