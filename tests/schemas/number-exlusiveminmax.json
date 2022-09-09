@@ -1,0 +1,14 @@
+{
+  "invalid": [
+    40,
+    45
+  ],
+  "schema": {
+    "exclusiveMaximum": 45,
+    "exclusiveMinimum": 40,
+    "type": "number"
+  },
+  "valid": [
+    42
+  ]
+}

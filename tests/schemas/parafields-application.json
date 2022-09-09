@@ -1,0 +1,279 @@
+{
+  "invalid": [
+    {
+      "grid": {
+        "cells": [
+          100,
+          100
+        ],
+        "extensions": [
+          0.0,
+          0.1
+        ]
+      }
+    }
+  ],
+  "schema": {
+    "properties": {
+      "embedding": {
+        "description": "Options for circulant embedding and periodization",
+        "properties": {
+          "approximate": {
+            "default": false,
+            "description": "Whether to accept approximate results or not. Simply sets negative eigenvalues to zero if they occur.",
+            "title": "Approximate results",
+            "type": "boolean"
+          },
+          "cofoldRecursions": {
+            "default": 99,
+            "description": "Number of recursions (and therefore smoothness) for smoothstep sigmoid function (magic value 99: heuristic for certain covariance functions)",
+            "minimum": 1,
+            "type": "integer"
+          },
+          "factor": {
+            "default": 2,
+            "description": "Relative size of extended domain (per dimension)",
+            "minimum": 1,
+            "title": "Embedding Factor",
+            "type": "integer"
+          },
+          "foldRecursions": {
+            "default": 99,
+            "description": "Number of recursions (and therefore smoothness) for smoothstep sigmoid function (magic value 99: heuristic for certain covariance functions)",
+            "minimum": 1,
+            "type": "integer"
+          },
+          "mergeRecursions": {
+            "default": 99,
+            "description": "Number of recursions (and therefore smoothness) for smoothstep sigmoid function (magic value 99: heuristic for certain covariance functions)",
+            "minimum": 1,
+            "type": "integer"
+          },
+          "optim": {
+            "default": "none",
+            "description": "Optimization strategy to find non-negative embedding",
+            "enum": [
+              "none",
+              "coneopt",
+              "dualopt"
+            ],
+            "title": "Optimization strategy",
+            "type": "string"
+          },
+          "periodization": {
+            "default": "classical",
+            "enum": [
+              "classical",
+              "merge",
+              "fold",
+              "cofold"
+            ],
+            "title": "Type of embedding",
+            "type": "string"
+          },
+          "sigmoid": {
+            "default": "smooth",
+            "description": "Sigmoid function for merging, resp. smooth max for folding. smoothstep is better, but requires choice for recursion level",
+            "enum": [
+              "smooth",
+              "smoothstep"
+            ],
+            "title": "Sigmoid function",
+            "type": "string"
+          },
+          "threshold": {
+            "default": 1e-14,
+            "description": "Threshold for considering eigenvalues as negative",
+            "minimum": 0.0,
+            "title": "Threshold",
+            "type": "number"
+          }
+        },
+        "title": "Embedding",
+        "type": "object"
+      },
+      "grid": {
+        "description": "Dimension and extent of discretized field",
+        "properties": {
+          "cells": {
+            "default": [
+              512,
+              512
+            ],
+            "description": "Number of cells per dimension",
+            "items": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "minItems": 1,
+            "title": "Cells",
+            "type": "array"
+          },
+          "extensions": {
+            "default": [
+              1.0,
+              1.0
+            ],
+            "description": "Extension per dimension",
+            "items": {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            "minItems": 1,
+            "title": "Extensions",
+            "type": "array"
+          }
+        },
+        "title": "Grid",
+        "type": "object"
+      },
+      "mean": {
+        "properties": {
+          "mean": {
+            "default": 0.5,
+            "title": "Mean of trend component",
+            "type": "number"
+          },
+          "variance": {
+            "default": 0.01,
+            "title": "Variance of trend component",
+            "type": "number"
+          }
+        },
+        "title": "Mean trend component of the field",
+        "type": "object"
+      },
+      "randomField": {
+        "properties": {
+          "cacheInvMatvec": {
+            "default": true,
+            "description": "Whether matvecs with inverse covariance matrix are cached",
+            "type": "boolean"
+          },
+          "cacheInvRootMatvec": {
+            "default": false,
+            "description": "Whether matvecs with approximate root of inv. cov. matrix are cached",
+            "type": "boolean"
+          },
+          "cgIterations": {
+            "default": 100,
+            "description": "Conjugate Gradients iterations for matrix inverse multiplication",
+            "minimum": 1,
+            "title": "CG Iterations",
+            "type": "integer"
+          },
+          "periodic": {
+            "default": false,
+            "description": "Setting periodic boundary conditions sets embedding.factor = 1, i.e. behavior can't be controlled per boundary segment and correlation length must be small enough",
+            "title": "Periodicity",
+            "type": "boolean"
+          },
+          "transform": {
+            "default": "none",
+            "description": "Transformation applied to Gaussian random field",
+            "enum": [
+              "none",
+              "logNormal",
+              "foldedNormal",
+              "sign",
+              "boxCox"
+            ],
+            "title": "Transformation",
+            "type": "string"
+          }
+        },
+        "title": "General Options for random field",
+        "type": "object"
+      },
+      "slope": {
+        "properties": {
+          "mean": {
+            "default": 0.5,
+            "title": "Mean of slope trend component",
+            "type": "number"
+          },
+          "variance": {
+            "default": 0.01,
+            "title": "Variance of slope trend component",
+            "type": "number"
+          }
+        },
+        "title": "Mean slope trend component of the field",
+        "type": "object"
+      },
+      "stochastic": {
+        "properties": {
+          "anisotropy": {
+            "default": "none",
+            "description": "Choice of anisotropy of variogram",
+            "enum": [
+              "none",
+              "axiparallel",
+              "geometric"
+            ],
+            "title": "Anisotropy",
+            "type": "string"
+          },
+          "corrLength": {
+            "default": [
+              0.05
+            ],
+            "description": "Correlation length of random field",
+            "items": {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            "minItems": 1,
+            "title": "Correlation length",
+            "type": "array"
+          },
+          "covariance": {
+            "default": "exponential",
+            "enum": [
+              "exponential",
+              "gammaExponential",
+              "separableExponential",
+              "matern",
+              "matern32",
+              "matern52",
+              "gaussian",
+              "spherical",
+              "cauchy",
+              "generalizedCauchy",
+              "cubic",
+              "dampedOscillation",
+              "whiteNoise",
+              "custom-iso",
+              "custom-aniso"
+            ],
+            "title": "Covariance structure",
+            "type": "string"
+          },
+          "variance": {
+            "default": 1.0,
+            "description": "Variance of random field",
+            "title": "Variance",
+            "type": "number"
+          }
+        },
+        "title": "Stochastic part of field",
+        "type": "object"
+      }
+    },
+    "type": "object"
+  },
+  "valid": [
+    {
+      "grid": {
+        "cells": [
+          100,
+          100
+        ],
+        "extensions": [
+          0.1,
+          0.1
+        ]
+      }
+    }
+  ]
+}
