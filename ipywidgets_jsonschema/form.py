@@ -39,21 +39,28 @@ def minmax_schema_rule(widget, schema):
     in a separate function, because it used twice for number and
     integer widgets.
     """
-    if "minimum" in schema:
 
-        def min_handler(_):
-            if widget.value < schema["minimum"]:
-                widget.value = schema["minimum"]
+    mapping = {
+        "minimum": lambda x, y: x < y,
+        "maximum": lambda x, y: x > y,
+        "exclusiveMinimum": lambda x, y: x <= y,
+        "exclusiveMaximum": lambda x, y: x >= y,
+    }
 
-        widget.observe(min_handler, names="value")
+    for rule, operator in mapping.items():
+        if rule in schema:
 
-    if "maximum" in schema:
+            def _create_handler(r, op, minmax):
+                def _handler(change):
+                    if op(widget.value, minmax):
+                        if r.startswith("exclusive"):
+                            widget.value = change["old"]
+                        else:
+                            widget.value = minmax
 
-        def max_handler(_):
-            if widget.value > schema["maximum"]:
-                widget.value = schema["maximum"]
+                return _handler
 
-        widget.observe(max_handler, names="value")
+            widget.observe(_create_handler(rule, operator, schema[rule]), names="value")
 
     return widget
 
