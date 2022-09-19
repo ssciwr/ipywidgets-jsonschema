@@ -424,13 +424,16 @@ class Form:
         if "items" not in schema:
             raise FormError("Expecting 'items' key for 'array' type")
 
+        # Determine whether this is a fixed length list
+        fixed_length = schema.get("minItems", -1) == schema.get("maxItems", -2)
+
         # Construct a widget that allows to add an array entry
         button = ipywidgets.Button(
             description="Add entry", icon="plus", layout=ipywidgets.Layout(width="100%")
         )
 
         # Construct the final widget that will be updated by handlers
-        vbox = ipywidgets.VBox([button])
+        vbox = ipywidgets.VBox([])
 
         # The subelements of this widget that are referenced in the
         # recursive implementation of this array element
@@ -443,9 +446,10 @@ class Form:
 
         # Trigger whenever the resulting widget needs update
         def update_widget():
-            vbox.children = sum((e.widgets for e in elements[:element_size]), []) + [
-                button
-            ]
+            subwidgets = sum((e.widgets for e in elements[:element_size]), [])
+            if not fixed_length:
+                subwidgets.append(button)
+            vbox.children = subwidgets
 
         def add_entry(_):
             nonlocal element_size
@@ -541,14 +545,17 @@ class Form:
                 down.on_click(move(1))
 
                 # Construct the final widget including array controls
-                array_entry_widget = ipywidgets.VBox(
-                    [
-                        recelem.widgets[0].children[0],
+                children = [
+                    recelem.widgets[0].children[0],
+                ]
+                if not fixed_length:
+                    children.append(
                         ipywidgets.HBox(
                             [trash, up, down], layout=ipywidgets.Layout(width="100%")
-                        ),
-                    ]
-                )
+                        )
+                    )
+
+                array_entry_widget = ipywidgets.VBox(children)
 
                 # Modify recelem to our needs
                 elemdict = recelem._asdict()
