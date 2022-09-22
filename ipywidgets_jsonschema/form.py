@@ -223,10 +223,46 @@ class Form:
         return [accordion]
 
     def _construct_object(self, schema, label=None, root=False):
-        # Construct form elements for all the fields
+        # Construct form elements for all the fields, including some that are
+        # added through 'if'-'then' rules. This maps key -> FormElement
         elements = {}
+
+        # Store the conditional information from the schema in the following form:
+        # key -> (value -> [(addkey, widget), ..])
+        # with the following meaning:
+        #   key: The property that the conditional inclusion depends on
+        #   value: The value that the property needs to match for the inclusion
+        #   addkey: The property that is added to the object
+        #   widget: The widget that implements the form
+        conditionals = {}
         for prop, subschema in schema["properties"].items():
             elements[prop] = self._construct(subschema, label=prop)
+
+            # Add conditional elements
+            def add_conditional_elements(s):
+                cond = (
+                    s.get("if", {})
+                    .get("properties", {})
+                    .get(prop, {})
+                    .get("const", None)
+                )
+                if cond is not None:
+                    for cprop, csubschema in (
+                        s.get("then", {}).get("properties", {}).items()
+                    ):
+                        celem = self._construct(csubschema, label=cprop)
+                        cwidgets = celem.widgets[0].children
+                        celem.widgets[:] = [
+                            ipywidgets.HBox(layout=ipywidgets.Layout(width="100%"))
+                        ]
+                        elements[cprop] = celem
+                        conditionals.setdefault(prop, {})
+                        conditionals[prop].setdefault(cond, [])
+                        conditionals[prop][cond].append((cprop, cwidgets))
+                if "else" in s:
+                    add_conditional_elements(s["else"])
+
+            add_conditional_elements(schema)
 
         # Apply sorting to the keys
         keys = schema["properties"].keys()
@@ -236,13 +272,48 @@ class Form:
             # If the keys cannot be compared, we stick to the original order
             pass
 
-        # If this is not the root document, we wrap this in an Accordion widget
-        widget_list = sum((elements[k].widgets for k in keys), [])
+        # Collect the list of widgets
+        widget_list = []
+        for k in keys:
+            widget_list.extend(elements[k].widgets)
+            for cmap in conditionals.get(k, {}).values():
+                for cprop, _ in cmap:
+                    widget_list.extend(elements[cprop].widgets)
+
         if not root:
             widget_list = self._wrap_accordion(widget_list, schema, label=label)
 
-        def _setter(_d):
+        # Add the conditional information
+        for cprop, cmap in conditionals.items():
+
+            def _cond_observer(change):
+                for cval in cmap.values():
+                    for p, _ in cval:
+                        elements[p].widgets[0].children = []
+                for value, elem in cmap.items():
+                    if change.get("new", None) == value:
+                        for p, w in elem:
+                            elements[p].widgets[0].children = w
+
+            elements[cprop].register_observer(_cond_observer, "value", "change")
+
+        def _getter():
+            # Get all regular properties
+            result = {}
             for k in schema["properties"].keys():
+                result[k] = elements[k].getter()
+
+            # Add conditional properties
+            for cprop, cmap in conditionals.items():
+                for value, elem in cmap.items():
+                    if elements[cprop].getter() == value:
+                        for p, _ in elem:
+                            result[p] = elements[p].getter()
+
+            return result
+
+        def _setter(_d):
+            for k in elements.keys():
                 if k in _d:
                     elements[k].setter(_d[k])
                 else:
@@ -257,7 +328,7 @@ class Form:
                 e.resetter()
 
         return self.construct_element(
-            getter=lambda: {p: e.getter() for p, e in elements.items()},
+            getter=_getter,
             setter=_setter,
             resetter=_resetter,
             widgets=widget_list,
