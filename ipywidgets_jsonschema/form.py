@@ -228,11 +228,10 @@ class Form:
         elements = {}
 
         # Store the conditional information from the schema in the following form:
-        # key -> (value -> [(addkey, widget), ..])
+        # cprop -> (schema, widget)
         # with the following meaning:
-        #   key: The property that the conditional inclusion depends on
-        #   value: The value that the property needs to match for the inclusion
-        #   addkey: The property that is added to the object
+        #   cprop: The property that is maybe added
+        #   schema: The schema that the data needs to match
         #   widget: The widget that implements the form
         conditionals = {}
         for prop, subschema in schema["properties"].items():
@@ -240,25 +239,22 @@ class Form:
 
             # Add conditional elements
             def add_conditional_elements(s):
-                cond = (
-                    s.get("if", {})
-                    .get("properties", {})
-                    .get(prop, {})
-                    .get("const", None)
-                )
-                if cond is not None:
-                    for cprop, csubschema in (
-                        s.get("then", {}).get("properties", {}).items()
-                    ):
-                        celem = self._construct(csubschema, label=cprop)
-                        cwidgets = celem.widgets[0].children
-                        celem.widgets[:] = [
-                            ipywidgets.HBox(layout=ipywidgets.Layout(width="100%"))
-                        ]
-                        elements[cprop] = celem
-                        conditionals.setdefault(prop, {})
-                        conditionals[prop].setdefault(cond, [])
-                        conditionals[prop][cond].append((cprop, cwidgets))
+                # Check whether we have an if statement
+                cond = s.get("if", None)
+                if cond is None:
+                    return
+
+                for cprop, csubschema in (
+                    s.get("then", {}).get("properties", {}).items()
+                ):
+                    celem = self._construct(csubschema, label=cprop)
+                    cwidgets = celem.widgets[0].children
+                    celem.widgets[:] = [
+                        ipywidgets.HBox(layout=ipywidgets.Layout(width="100%"))
+                    ]
+                    elements[cprop] = celem
+                    conditionals[cprop] = [cond, cwidgets]
+
                 if "else" in s:
                     add_conditional_elements(s["else"])
 
@@ -273,29 +269,28 @@ class Form:
             pass
 
         # Collect the list of widgets
-        widget_list = []
-        for k in keys:
-            widget_list.extend(elements[k].widgets)
-            for cmap in conditionals.get(k, {}).values():
-                for cprop, _ in cmap:
-                    widget_list.extend(elements[cprop].widgets)
-
+        widget_list = sum((e.widgets for e in elements.values()), [])
         if not root:
             widget_list = self._wrap_accordion(widget_list, schema, label=label)
 
         # Add the conditional information
-        for cprop, cmap in conditionals.items():
+        for cprop, (cschema, cwidgets) in conditionals.items():
 
-            def _cond_observer(change):
-                for cval in cmap.values():
-                    for p, _ in cval:
-                        elements[p].widgets[0].children = []
-                for value, elem in cmap.items():
-                    if change.get("new", None) == value:
-                        for p, w in elem:
-                            elements[p].widgets[0].children = w
+            def create_observer(prop, s, w):
+                def _cond_observer(_):
+                    # Check whether our data matches the given schema
+                    try:
+                        jsonschema.validate(instance=_getter(), schema=s)
+                        elements[prop].widgets[0].children = w
+                    except jsonschema.ValidationError:
+                        elements[prop].widgets[0].children = []
 
-            elements[cprop].register_observer(_cond_observer, "value", "change")
+                return _cond_observer
+
+            for k in cschema.get("properties", {}).keys():
+                elements[k].register_observer(
+                    create_observer(cprop, cschema, cwidgets), "value", "change"
+                )
 
         def _getter():
             # Get all regular properties
@@ -304,11 +299,12 @@ class Form:
                 result[k] = elements[k].getter()
 
             # Add conditional properties
-            for cprop, cmap in conditionals.items():
-                for value, elem in cmap.items():
-                    if elements[cprop].getter() == value:
-                        for p, _ in elem:
-                            result[p] = elements[p].getter()
+            for cprop, (cschema, _) in conditionals.items():
+                try:
+                    jsonschema.validate(instance=result, schema=cschema)
+                    result[cprop] = elements[cprop].getter()
+                except jsonschema.ValidationError:
+                    pass
 
             return result
 
@@ -326,6 +322,8 @@ class Form:
         def _resetter():
             for e in elements.values():
                 e.resetter()
+
+        _resetter()
 
         return self.construct_element(
             getter=_getter,
