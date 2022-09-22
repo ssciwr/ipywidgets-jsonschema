@@ -1,0 +1,56 @@
+{
+  "default": {
+    "age": 10,
+    "gender": "F"
+  },
+  "schema": {
+    "if": {
+      "properties": {
+        "age": {
+          "minimum": 14
+        },
+        "gender": {
+          "const": "M"
+        }
+      }
+    },
+    "properties": {
+      "age": {
+        "default": 10,
+        "type": "integer"
+      },
+      "gender": {
+        "default": "F",
+        "enum": [
+          "M",
+          "F"
+        ],
+        "type": "string"
+      }
+    },
+    "then": {
+      "properties": {
+        "beard": {
+          "type": "boolean"
+        }
+      }
+    },
+    "type": "object"
+  },
+  "valid": [
+    {
+      "age": 15,
+      "gender": "M"
+    },
+    {
+      "age": 15,
+      "beard": true,
+      "gender": "M"
+    },
+    {
+      "age": 15,
+      "beard": false,
+      "gender": "M"
+    }
+  ]
+}

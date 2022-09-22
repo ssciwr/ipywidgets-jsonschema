@@ -1,0 +1,56 @@
+{
+  "default": {
+    "country": "Germany",
+    "germanydetail": "foo"
+  },
+  "schema": {
+    "else": {
+      "if": {
+        "properties": {
+          "country": {
+            "const": "Germany"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "germanydetail": {
+            "default": "foo",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "if": {
+      "properties": {
+        "country": {
+          "const": "France"
+        }
+      }
+    },
+    "properties": {
+      "country": {
+        "default": "Germany",
+        "enum": [
+          "Germany",
+          "France"
+        ],
+        "type": "string"
+      }
+    },
+    "then": {
+      "properties": {
+        "francedetail": {
+          "type": "string"
+        }
+      }
+    },
+    "type": "object"
+  },
+  "valid": [
+    {
+      "country": "France",
+      "francedetail": "bar"
+    }
+  ]
+}

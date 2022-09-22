@@ -223,10 +223,42 @@ class Form:
         return [accordion]
 
     def _construct_object(self, schema, label=None, root=False):
-        # Construct form elements for all the fields
+        # Construct form elements for all the fields, including some that are
+        # added through 'if'-'then' rules. This maps key -> FormElement
         elements = {}
+
+        # Store the conditional information from the schema in the following form:
+        # cprop -> (schema, widget)
+        # with the following meaning:
+        #   cprop: The property that is maybe added
+        #   schema: The schema that the data needs to match
+        #   widget: The widget that implements the form
+        conditionals = {}
         for prop, subschema in schema["properties"].items():
             elements[prop] = self._construct(subschema, label=prop)
+
+            # Add conditional elements
+            def add_conditional_elements(s):
+                # Check whether we have an if statement
+                cond = s.get("if", None)
+                if cond is None:
+                    return
+
+                for cprop, csubschema in (
+                    s.get("then", {}).get("properties", {}).items()
+                ):
+                    celem = self._construct(csubschema, label=cprop)
+                    cwidgets = celem.widgets[0].children
+                    celem.widgets[:] = [
+                        ipywidgets.HBox(layout=ipywidgets.Layout(width="100%"))
+                    ]
+                    elements[cprop] = celem
+                    conditionals[cprop] = [cond, cwidgets]
+
+                if "else" in s:
+                    add_conditional_elements(s["else"])
+
+            add_conditional_elements(schema)
 
         # Apply sorting to the keys
         keys = schema["properties"].keys()
@@ -236,13 +268,48 @@ class Form:
             # If the keys cannot be compared, we stick to the original order
             pass
 
-        # If this is not the root document, we wrap this in an Accordion widget
-        widget_list = sum((elements[k].widgets for k in keys), [])
+        # Collect the list of widgets
+        widget_list = sum((e.widgets for e in elements.values()), [])
         if not root:
             widget_list = self._wrap_accordion(widget_list, schema, label=label)
 
-        def _setter(_d):
+        # Add the conditional information
+        for cprop, (cschema, cwidgets) in conditionals.items():
+
+            def create_observer(prop, s, w):
+                def _cond_observer(_):
+                    # Check whether our data matches the given schema
+                    try:
+                        jsonschema.validate(instance=_getter(), schema=s)
+                        elements[prop].widgets[0].children = w
+                    except jsonschema.ValidationError:
+                        elements[prop].widgets[0].children = []
+
+                return _cond_observer
+
+            for k in cschema.get("properties", {}).keys():
+                elements[k].register_observer(
+                    create_observer(cprop, cschema, cwidgets), "value", "change"
+                )
+
+        def _getter():
+            # Get all regular properties
+            result = {}
             for k in schema["properties"].keys():
+                result[k] = elements[k].getter()
+
+            # Add conditional properties
+            for cprop, (cschema, _) in conditionals.items():
+                try:
+                    jsonschema.validate(instance=result, schema=cschema)
+                    result[cprop] = elements[cprop].getter()
+                except jsonschema.ValidationError:
+                    pass
+
+            return result
+
+        def _setter(_d):
+            for k in elements.keys():
                 if k in _d:
                     elements[k].setter(_d[k])
                 else:
@@ -256,8 +323,10 @@ class Form:
             for e in elements.values():
                 e.resetter()
 
+        _resetter()
+
         return self.construct_element(
-            getter=lambda: {p: e.getter() for p, e in elements.items()},
+            getter=_getter,
             setter=_setter,
             resetter=_resetter,
             widgets=widget_list,
