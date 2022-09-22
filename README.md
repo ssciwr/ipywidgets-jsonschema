@@ -46,7 +46,7 @@ conda install -c conda-forge ipywidgets-jsonschema
   a form generator and are therefore omitted e.g.
   * The `allOf` and `not` rules for schema composition
   * Media types
-  * Conditional subschemas (might be added)
+  * There is only rudimentary support for conditional subschemas (like `if`-`then`-`else`)
 * Some annotations that are purely optional in the specification are required
   for the schema to be usable with `ipywidgets-jsonschema` e.g. a `title` field
   when the resulting widget would otherwise not be self-explanatory.
