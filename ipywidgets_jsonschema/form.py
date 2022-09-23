@@ -268,8 +268,11 @@ class Form:
             # If the keys cannot be compared, we stick to the original order
             pass
 
-        # Collect the list of widgets
-        widget_list = sum((e.widgets for e in elements.values()), [])
+        # Collect the list of widgets: First the regular ones, then conditional ones
+        widget_list = sum((elements[k].widgets for k in keys), [])
+        widget_list.extend(
+            sum((e.widgets for k, e in elements.items() if k not in keys), [])
+        )
         if not root:
             widget_list = self._wrap_accordion(widget_list, schema, label=label)
 
