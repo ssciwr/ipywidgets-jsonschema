@@ -379,7 +379,7 @@ class Form:
         # Apply regex pattern matching
         def pattern_checker(val):
             # This only makes sense for strings
-            if schema["type"] != "string":
+            if schema["type"] != "string" or val is None:
                 return True
 
             # Try matching the given data against the pattern
