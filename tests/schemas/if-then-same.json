@@ -1,0 +1,58 @@
+{
+  "schema": {
+    "default": {
+      "type": "integer",
+      "value": 42
+    },
+    "else": {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "string"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "if": {
+      "properties": {
+        "type": {
+          "const": "integer"
+        }
+      }
+    },
+    "properties": {
+      "type": {
+        "enum": [
+          "integer",
+          "string"
+        ],
+        "type": "string"
+      }
+    },
+    "then": {
+      "properties": {
+        "value": {
+          "type": "integer"
+        }
+      }
+    },
+    "type": "object"
+  },
+  "valid": [
+    {
+      "type": "integer",
+      "value": 42
+    },
+    {
+      "type": "string",
+      "value": "foo"
+    }
+  ]
+}
