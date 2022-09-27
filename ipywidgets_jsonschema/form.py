@@ -228,37 +228,31 @@ class Form:
         elements = {}
 
         # Store the conditional information from the schema in the following form:
-        # cprop -> (schema, widget)
+        # [(schema, cprop, element), ..]
         # with the following meaning:
-        #   cprop: The property that is maybe added
         #   schema: The schema that the data needs to match
-        #   widget: The widget that implements the form
-        conditionals = {}
+        #   cprop: The property that is maybe added
+        #   element: The subelement for the property
+        conditionals = []
         for prop, subschema in schema["properties"].items():
             elements[prop] = self._construct(subschema, label=prop)
 
-            # Add conditional elements
-            def add_conditional_elements(s):
-                # Check whether we have an if statement
-                cond = s.get("if", None)
-                if cond is None:
-                    return
+        # Add conditional elements
+        def add_conditional_elements(s):
+            # Check whether we have an if statement
+            cond = s.get("if", None)
+            if cond is None:
+                return
 
-                for cprop, csubschema in (
-                    s.get("then", {}).get("properties", {}).items()
-                ):
-                    celem = self._construct(csubschema, label=cprop)
-                    cwidgets = celem.widgets[0].children
-                    celem.widgets[:] = [
-                        ipywidgets.HBox(layout=ipywidgets.Layout(width="100%"))
-                    ]
-                    elements[cprop] = celem
-                    conditionals[cprop] = [cond, cwidgets]
+            for cprop, csubschema in s.get("then", {}).get("properties", {}).items():
+                celem = self._construct(csubschema, label=cprop)
+                conditionals.append((cond, cprop, celem))
+                elements[cprop] = celem
 
-                if "else" in s:
-                    add_conditional_elements(s["else"])
+            if "else" in s:
+                add_conditional_elements(s["else"])
 
-            add_conditional_elements(schema)
+        add_conditional_elements(schema)
 
         # Apply sorting to the keys
         keys = schema["properties"].keys()
@@ -271,29 +265,16 @@ class Form:
         # Collect the list of widgets: First the regular ones, then conditional ones
         widget_list = sum((elements[k].widgets for k in keys), [])
         widget_list.extend(
-            sum((e.widgets for k, e in elements.items() if k not in keys), [])
+            [
+                ipywidgets.HBox(layout=ipywidgets.Layout(width="100%"))
+                for _ in range(len(conditionals))
+            ]
         )
+
+        # Maybe wrap this in an Accordion widget
+        wrapped_widget_list = widget_list
         if not root:
-            widget_list = self._wrap_accordion(widget_list, schema, label=label)
-
-        # Add the conditional information
-        for cprop, (cschema, cwidgets) in conditionals.items():
-
-            def create_observer(prop, s, w):
-                def _cond_observer(_):
-                    # Check whether our data matches the given schema
-                    try:
-                        jsonschema.validate(instance=_getter(), schema=s)
-                        elements[prop].widgets[0].children = w
-                    except jsonschema.ValidationError:
-                        elements[prop].widgets[0].children = []
-
-                return _cond_observer
-
-            for k in cschema.get("properties", {}).keys():
-                elements[k].register_observer(
-                    create_observer(cprop, cschema, cwidgets), "value", "change"
-                )
+            wrapped_widget_list = self._wrap_accordion(widget_list, schema, label=label)
 
         def _getter():
             # Get all regular properties
@@ -302,10 +283,10 @@ class Form:
                 result[k] = elements[k].getter()
 
             # Add conditional properties
-            for cprop, (cschema, _) in conditionals.items():
+            for cschema, cprop, celem in conditionals:
                 try:
                     jsonschema.validate(instance=result, schema=cschema)
-                    result[cprop] = elements[cprop].getter()
+                    result[cprop] = celem.getter()
                 except jsonschema.ValidationError:
                     pass
 
@@ -326,13 +307,39 @@ class Form:
             for e in elements.values():
                 e.resetter()
 
+        # Add the conditional information
+        for i, (cschema, cprop, celem) in enumerate(conditionals):
+
+            def create_observer(j, s, prop, e):
+                def _cond_observer(_):
+                    # Check whether our data matches the given schema
+                    try:
+                        jsonschema.validate(instance=_getter(), schema=s)
+                        elements[prop] = e
+                        widget_list[len(keys) + j].children = e.widgets
+                    except jsonschema.ValidationError:
+                        widget_list[len(keys) + j].children = []
+
+                # We need to call the observer once so that we get a correctly
+                # initialized widget, because otherwise it triggers only if it
+                # differs from the default.
+                _cond_observer({})
+
+                return _cond_observer
+
+            for k in cschema.get("properties", {}).keys():
+                elements[k].register_observer(
+                    create_observer(i, cschema, cprop, celem), "value", "change"
+                )
+
+        # Ensure that defaults are initialized
         _resetter()
 
         return self.construct_element(
             getter=_getter,
             setter=_setter,
             resetter=_resetter,
-            widgets=widget_list,
+            widgets=wrapped_widget_list,
             subelements=elements,
             register_observer=_register_observer,
         )
@@ -372,7 +379,7 @@ class Form:
         # Apply regex pattern matching
         def pattern_checker(val):
             # This only makes sense for strings
-            if schema["type"] != "string":
+            if schema["type"] != "string" or val is None:
                 return True
 
             # Try matching the given data against the pattern
