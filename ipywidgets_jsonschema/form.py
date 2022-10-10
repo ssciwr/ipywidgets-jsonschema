@@ -273,7 +273,7 @@ class Form:
 
         # Maybe wrap this in an Accordion widget
         wrapped_widget_list = widget_list
-        if not root:
+        if not root and len(schema["properties"]) > 1:
             wrapped_widget_list = self._wrap_accordion(widget_list, schema, label=label)
 
         def _getter():
