@@ -712,6 +712,10 @@ class Form:
         )
 
     def _construct_anyof(self, schema, label=None, key="anyOf"):
+        # If this is a trivial anyOf rule, we omit it:
+        if len(schema[key]) == 1:
+            return self._construct(schema[key][0], label=label, root=False)
+
         # The list of subelements and their descriptive names
         names = []
         elements = []
