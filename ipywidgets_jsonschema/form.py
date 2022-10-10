@@ -712,11 +712,6 @@ class Form:
         )
 
     def _construct_anyof(self, schema, label=None, key="anyOf"):
-        # Maybe create an explanatory widget
-        title = []
-        if "title" in schema:
-            title = [ipywidgets.Label(schema["title"])]
-
         # The list of subelements and their descriptive names
         names = []
         elements = []
@@ -764,7 +759,7 @@ class Form:
             getter=lambda: elements[names.index(selector.value)].getter(),
             setter=_setter,
             resetter=_resetter,
-            widgets=[ipywidgets.VBox(children=title + [widget])],
+            widgets=[ipywidgets.VBox(children=[widget])],
             subelements=elements,
             register_observer=_register_observer,
         )
