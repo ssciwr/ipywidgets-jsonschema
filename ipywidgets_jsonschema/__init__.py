@@ -1,3 +1,4 @@
-from ipywidgets_jsonschema.form import Form
+# The version file is generated automatically by setuptools_scm
+from ipywidgets_jsonschema._version import version as __version__
 
-__version__ = "0.12.0"
+from ipywidgets_jsonschema.form import Form
