@@ -30,6 +30,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+          # setuptools_scm requires a non-shallow clone of the repository
+          fetch-depth: 0
 
     - name: Setup Python
       uses: actions/setup-python@v4

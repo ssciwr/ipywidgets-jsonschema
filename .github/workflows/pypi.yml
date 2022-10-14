@@ -13,13 +13,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+          # setuptools_scm requires a non-shallow clone of the repository
+          fetch-depth: 0
 
     - uses: actions/setup-python@v4
       name: Install Python
 
     - name: Build source distribution
       run: |
-        python setup.py sdist
+        pipx run build --sdist
 
     - uses: pypa/gh-action-pypi-publish@master
       with:
