@@ -434,7 +434,7 @@ class Form:
             getter=_getter,
             setter=_setter,
             resetter=_resetter,
-            widgets=[box_type(box)],
+            widgets=[box_type(box, layout=ipywidgets.Layout(width="100%"))],
             register_observer=_register_observer,
         )
 
