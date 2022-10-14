@@ -1,9 +1,48 @@
 [build-system]
-requires = ["setuptools>=46.4", "wheel"]
+requires = [
+    "setuptools>=61",
+    "setuptools_scm >=7",
+    "wheel",
+]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "ipywidgets_jsonschema"
+dynamic = ["version"]
+description = "Widget Generator for JSON schema"
+readme = "README.md"
+maintainers =[
+    { name = "Dominic Kempf", email = "ssc@iwr.uni-heidelberg.de" }
+]
+license = { text = "LICENSE.md" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "IPython",
+    "ipywidgets",
+    "jsonschema<4",
+    "packaging",
+    "traitlets",
+]
+
+[tool.setuptools]
+packages = [
+    "ipywidgets_jsonschema",
+]
 
 [tool.pytest.ini_options]
 testpaths = [
     "tests",
     "demo",
 ]
+
+# Configure setuptools_scm, which extracts the version number from
+# the version control system. For more information see its documentation:
+# https://github.com/pypa/setuptools_scm
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "node-and-date"
+write_to = "ipywidgets_jsonschema/_version.py"
