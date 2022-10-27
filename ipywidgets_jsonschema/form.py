@@ -364,7 +364,6 @@ class Form:
                 ipywidgets.Label(
                     title,
                     layout=ipywidgets.Layout(width="100%"),
-                    tooltip=tooltip,
                 ),
             )
 
