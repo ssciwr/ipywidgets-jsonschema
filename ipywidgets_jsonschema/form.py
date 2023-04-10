@@ -556,7 +556,6 @@ class Form:
             # A new element should only be generated if we do not have an excess
             # one stored in the elements list
             if element_size == len(elements):
-
                 # Create a new element by going into recursion
                 recelem = self._construct(schema["items"], label=None)
 
