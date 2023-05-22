@@ -678,6 +678,8 @@ class Form:
                 add_entry(None)
                 elements[i].setter(item)
 
+            update_widget()
+
         def _register_observer(h, n, t):
             for e in elements:
                 e.register_observer(h, n, t)
