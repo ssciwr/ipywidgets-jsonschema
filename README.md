@@ -44,7 +44,7 @@ conda install -c conda-forge ipywidgets-jsonschema
 
 * Some aspects of the JSON Schema specification are hard to implement in
   a form generator and are therefore omitted e.g.
-  * The `allOf` and `not` rules for schema composition
+  * The `allOf` and `not` rules for schema composition are only partially or not at all supported.
   * Media types
   * There is only rudimentary support for conditional subschemas (like `if`-`then`-`else`)
 * Some annotations that are purely optional in the specification are required
