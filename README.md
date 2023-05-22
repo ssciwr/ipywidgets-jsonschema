@@ -6,10 +6,15 @@
 [![Conda Version](https://img.shields.io/conda/vn/conda-forge/ipywidgets-jsonschema.svg)](https://anaconda.org/conda-forge/ipywidgets-jsonschema)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ssciwr/ipywidgets-jsonschema/main?labpath=demo%2Fdemo.ipynb)
 
+## Usage
+
+![Minimum usage exmaple](https://raw.githubusercontent.com/ssciwr/ipywidgets-jsonschema/main/ipywidgets-jsonschema.gif)
+
 This project allows you to generate Jupyter widgets from schemas
 that follow the [JSONSchema specification](https://json-schema.org). If you already have
 a schema available, creating a widget form for it is as simple
 as this:
+
 
 ```
 from ipywidgets_jsonschema import Form
