@@ -25,6 +25,8 @@ repos:
       - id: check-json
       # Format JSON files consistently
       - id: pretty-format-json
+        exclude_types:
+          - jupyter
         args:
           - --autofix
 
