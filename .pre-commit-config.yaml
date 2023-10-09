@@ -15,7 +15,7 @@ repos:
 
   # Add some general purpose useful hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       # Make sure that contained YAML files are well-formed
       - id: check-yaml
@@ -32,6 +32,6 @@ repos:
 
   # Automatically format/sanitize setup.cfg
   - repo: https://github.com/asottile/setup-cfg-fmt
-    rev: v2.4.0
+    rev: v2.5.0
     hooks:
       - id: setup-cfg-fmt
