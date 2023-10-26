@@ -102,7 +102,6 @@ class Form:
         # Make sure that the given schema is valid
         Draft7Validator.check_schema(schema)
 
-
         # Store the given data members
         self.schema = schema
         self.vertically_place_labels = vertically_place_labels
