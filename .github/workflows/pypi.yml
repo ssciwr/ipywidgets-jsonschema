@@ -24,7 +24,7 @@ jobs:
       run: |
         pipx run build --sdist
 
-    - uses: pypa/gh-action-pypi-publish@master
+    - uses: pypa/gh-action-pypi-publish@v1.8.10
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
