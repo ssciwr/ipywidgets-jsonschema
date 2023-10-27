@@ -4,6 +4,7 @@ from packaging import version
 import collections
 import ipywidgets
 import jsonschema
+from jsonschema.validators import Draft7Validator
 import json
 import os
 import re
@@ -99,13 +100,7 @@ class Form:
             the built-in sorted, but is no-op if sorted raises a TypeError.
         """
         # Make sure that the given schema is valid
-        filename = os.path.join(
-            os.path.split(jsonschema.__file__)[0], "schemas", "draft7.json"
-        )
-        with open(filename, "r") as f:
-            meta_schema = json.load(f)
-        meta_schema["additionalProperties"] = False
-        jsonschema.validate(instance=schema, schema=meta_schema)
+        Draft7Validator.check_schema(schema)
 
         # Store the given data members
         self.schema = schema
