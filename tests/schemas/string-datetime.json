@@ -2,8 +2,8 @@
   "default": "2018-11-13T20:20:39+00:00",
   "schema": {
     "default": "2018-11-13T20:20:39+00:00",
-    "type": "string",
-    "format": "date-time"
+    "format": "date-time",
+    "type": "string"
   },
   "valid": [
     "2018-11-13T20:20:39+00:00"

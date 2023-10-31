@@ -2,8 +2,8 @@
   "default": "20:20:39",
   "schema": {
     "default": "20:20:39",
-    "type": "string",
-    "format": "time"
+    "format": "time",
+    "type": "string"
   },
   "valid": [
     "20:20:39"

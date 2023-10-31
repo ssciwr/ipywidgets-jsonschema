@@ -123,9 +123,6 @@ class Form:
         self.time_fmt_func = time_fmt_func
         self.time_parse_func = time_parse_func
 
-
-
-
         # Store a list of registered observers to add them to runtime-generated widgets
         self._observers = []
 
@@ -217,8 +214,9 @@ class Form:
 
         format_ = schema.get("format", None)
         if format_ in ["date-time", "date", "time"]:
-
-            return getattr(self, f"_construct_{format_.replace('-','_')}")(schema, label=label, root=root)
+            return getattr(self, f"_construct_{format_.replace('-','_')}")(
+                schema, label=label, root=root
+            )
 
         return getattr(self, f"_construct_{type_}")(schema, label=label, root=root)
 
@@ -480,13 +478,11 @@ class Form:
         if tooltip is not None:
             widget.tooltip = tooltip
 
-
         def _register_observer(h, n, t):
             widget.observe(h, names=n, type=t)
 
         def _setter(_d):
             widget.value = self.date_time_parse_func(_d)
-
 
         def _resetter():
             # Apply a potential default
@@ -494,7 +490,6 @@ class Form:
                 widget.value = self.date_time_parse_func(schema["default"])
             else:
                 widget.value = datetime.datetime.now()
-
 
         def _getter():
             if widget.value:
@@ -542,13 +537,11 @@ class Form:
         if tooltip is not None:
             widget.tooltip = tooltip
 
-
         def _register_observer(h, n, t):
             widget.observe(h, names=n, type=t)
 
         def _setter(_d):
             widget.value = self.date_parse_func(_d)
-
 
         def _resetter():
             # Apply a potential default
@@ -556,7 +549,6 @@ class Form:
                 widget.value = self.date_parse_func(schema["default"])
             else:
                 widget.value = datetime.datetime.now()
-
 
         def _getter():
             if widget.value:
@@ -604,13 +596,11 @@ class Form:
         if tooltip is not None:
             widget.tooltip = tooltip
 
-
         def _register_observer(h, n, t):
             widget.observe(h, names=n, type=t)
 
         def _setter(_d):
             widget.value = self.time_parse_func(_d)
-
 
         def _resetter():
             # Apply a potential default
@@ -618,7 +608,6 @@ class Form:
                 widget.value = self.time_parse_func(schema["default"])
             else:
                 widget.value = datetime.datetime.now()
-
 
         def _getter():
             if widget.value:
@@ -643,6 +632,7 @@ class Form:
             widgets=[box_type(box, layout=ipywidgets.Layout(width="100%"))],
             register_observer=_register_observer,
         )
+
     def _construct_number(self, schema, label=None, root=False):
         kwargs = dict()
         if "multipleOf" in schema:
