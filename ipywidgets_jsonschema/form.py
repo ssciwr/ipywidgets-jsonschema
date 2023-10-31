@@ -213,7 +213,16 @@ class Form:
             raise FormError("Not accepting arrays of types currently")
 
         format_ = schema.get("format", None)
-        if format_ in ["date-time", "date", "time"]:
+        available_fmt = []
+        if hasattr(ipywidgets, "DatetimePicker"):
+            available_fmt.append("date-time")
+        if hasattr(ipywidgets, "DatePicker"):
+            available_fmt.append("date")
+        if hasattr(ipywidgets, "TimePicker"):
+            available_fmt.append("time")
+
+
+        if format_ in available_fmt:
             return getattr(self, f"_construct_{format_.replace('-','_')}")(
                 schema, label=label, root=root
             )
