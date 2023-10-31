@@ -221,7 +221,6 @@ class Form:
         if hasattr(ipywidgets, "TimePicker"):
             available_fmt.append("time")
 
-
         if format_ in available_fmt:
             return getattr(self, f"_construct_{format_.replace('-','_')}")(
                 schema, label=label, root=root
