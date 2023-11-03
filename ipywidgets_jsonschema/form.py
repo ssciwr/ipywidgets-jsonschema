@@ -16,6 +16,12 @@ import traitlets
 # We are providing some compatibility for ipywidgets v7 and v8
 IS_VERSION_8 = version.parse(ipywidgets.__version__).major == 8
 
+# We currently do not support all the format options that the
+# JSONSchema standard supports:
+# https://json-schema.org/understanding-json-schema/reference/string#built-in-formats
+SUPPORTED_FORMATS_VERSION_7 = []
+SUPPORTED_FORMATS_VERSION_8 = ["date-time", "time", "date"]
+
 
 class FormError(Exception):
     pass
@@ -212,19 +218,13 @@ class Form:
         if not isinstance(type_, str):
             raise FormError("Not accepting arrays of types currently")
 
+        # Maybe this is using a built-in format
         format_ = schema.get("format", None)
-        available_fmt = []
-        if hasattr(ipywidgets, "DatetimePicker"):
-            available_fmt.append("date-time")
-        if hasattr(ipywidgets, "DatePicker"):
-            available_fmt.append("date")
-        if hasattr(ipywidgets, "TimePicker"):
-            available_fmt.append("time")
-
-        if format_ in available_fmt:
-            return getattr(self, f"_construct_{format_.replace('-','_')}")(
-                schema, label=label, root=root
-            )
+        if format_ is not None:
+            if (IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_8) or (
+                not IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_7
+            ):
+                type_ = format_.replace("-", "_")
 
         return getattr(self, f"_construct_{type_}")(schema, label=label, root=root)
 
