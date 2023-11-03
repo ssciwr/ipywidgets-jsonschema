@@ -1,3 +1,5 @@
+import datetime
+
 from IPython.display import display
 from packaging import version
 
@@ -13,6 +15,12 @@ import traitlets
 
 # We are providing some compatibility for ipywidgets v7 and v8
 IS_VERSION_8 = version.parse(ipywidgets.__version__).major == 8
+
+# We currently do not support all the format options that the
+# JSONSchema standard supports:
+# https://json-schema.org/understanding-json-schema/reference/string#built-in-formats
+SUPPORTED_FORMATS_VERSION_7 = []
+SUPPORTED_FORMATS_VERSION_8 = ["date-time", "time", "date"]
 
 
 class FormError(Exception):
@@ -74,6 +82,12 @@ class Form:
         use_sliders=False,
         preconstruct_array_items=0,
         sorter=sorted,
+        date_time_fmt_func=lambda dt: dt.isoformat(),
+        date_time_parse_func=datetime.datetime.fromisoformat,
+        date_fmt_func=lambda dt: dt.isoformat(),
+        date_parse_func=datetime.date.fromisoformat,
+        time_fmt_func=lambda dt: dt.isoformat(),
+        time_parse_func=datetime.time.fromisoformat,
     ):
         """Create a form with Jupyter widgets from a JSON schema
 
@@ -108,6 +122,12 @@ class Form:
         self.use_sliders = use_sliders
         self.preconstruct_array_items = preconstruct_array_items
         self.sorter = sorter
+        self.date_time_fmt_func = date_time_fmt_func
+        self.date_time_parse_func = date_time_parse_func
+        self.date_fmt_func = date_fmt_func
+        self.date_parse_func = date_parse_func
+        self.time_fmt_func = time_fmt_func
+        self.time_parse_func = time_parse_func
 
         # Store a list of registered observers to add them to runtime-generated widgets
         self._observers = []
@@ -197,6 +217,15 @@ class Form:
             raise FormError("Expecting type information for non-enum properties")
         if not isinstance(type_, str):
             raise FormError("Not accepting arrays of types currently")
+
+        # Maybe this is using a built-in format
+        format_ = schema.get("format", None)
+        if format_ is not None:
+            if (IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_8) or (
+                not IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_7
+            ):
+                type_ = format_.replace("-", "_")
+
         return getattr(self, f"_construct_{type_}")(schema, label=label, root=root)
 
     def _wrap_accordion(self, widget_list, schema, label=None):
@@ -434,6 +463,183 @@ class Form:
 
     def _construct_string(self, schema, label=None, root=False):
         return self._construct_simple(schema, ipywidgets.Text(), label=label)
+
+    def _construct_date_time(self, schema, label=None, root=False):
+        widget = ipywidgets.DatetimePicker()
+
+        # Extract the best description that we have
+        tooltip = schema.get("description", None)
+
+        # Construct the label widget that describes the input
+        box = [widget]
+        if label is not None or "title" in schema:
+            # Extract the best guess for a title that we have
+            title = schema.get("title", label)
+
+            # Use the label as the backup tooltip
+            if tooltip is None:
+                tooltip = title
+
+            widget.description = title
+
+        # Make sure that the widget shows the tooltip
+        if tooltip is not None:
+            widget.tooltip = tooltip
+
+        def _register_observer(h, n, t):
+            widget.observe(h, names=n, type=t)
+
+        def _setter(_d):
+            widget.value = self.date_time_parse_func(_d)
+
+        def _resetter():
+            # Apply a potential default
+            if "default" in schema:
+                widget.value = self.date_time_parse_func(schema["default"])
+            else:
+                widget.value = datetime.datetime.now()
+
+        def _getter():
+            if widget.value:
+                return self.date_time_fmt_func(widget.value)
+            return ""
+
+        # Trigger generation of defaults in construction
+        _resetter()
+
+        # Make sure the widget adapts to the outer layout
+        widget.layout = ipywidgets.Layout(width="100%")
+
+        # Make the placing of labels optional
+        box_type = ipywidgets.HBox
+        if self.vertically_place_labels:
+            box_type = ipywidgets.VBox
+
+        return self.construct_element(
+            getter=_getter,
+            setter=_setter,
+            resetter=_resetter,
+            widgets=[box_type(box, layout=ipywidgets.Layout(width="100%"))],
+            register_observer=_register_observer,
+        )
+
+    def _construct_date(self, schema, label=None, root=False):
+        widget = ipywidgets.DatePicker()
+
+        # Extract the best description that we have
+        tooltip = schema.get("description", None)
+
+        # Construct the label widget that describes the input
+        box = [widget]
+        if label is not None or "title" in schema:
+            # Extract the best guess for a title that we have
+            title = schema.get("title", label)
+
+            # Use the label as the backup tooltip
+            if tooltip is None:
+                tooltip = title
+
+            widget.description = title
+
+        # Make sure that the widget shows the tooltip
+        if tooltip is not None:
+            widget.tooltip = tooltip
+
+        def _register_observer(h, n, t):
+            widget.observe(h, names=n, type=t)
+
+        def _setter(_d):
+            widget.value = self.date_parse_func(_d)
+
+        def _resetter():
+            # Apply a potential default
+            if "default" in schema:
+                widget.value = self.date_parse_func(schema["default"])
+            else:
+                widget.value = datetime.datetime.now()
+
+        def _getter():
+            if widget.value:
+                return self.date_fmt_func(widget.value)
+            return ""
+
+        # Trigger generation of defaults in construction
+        _resetter()
+
+        # Make sure the widget adapts to the outer layout
+        widget.layout = ipywidgets.Layout(width="100%")
+
+        # Make the placing of labels optional
+        box_type = ipywidgets.HBox
+        if self.vertically_place_labels:
+            box_type = ipywidgets.VBox
+
+        return self.construct_element(
+            getter=_getter,
+            setter=_setter,
+            resetter=_resetter,
+            widgets=[box_type(box, layout=ipywidgets.Layout(width="100%"))],
+            register_observer=_register_observer,
+        )
+
+    def _construct_time(self, schema, label=None, root=False):
+        widget = ipywidgets.TimePicker()
+
+        # Extract the best description that we have
+        tooltip = schema.get("description", None)
+
+        # Construct the label widget that describes the input
+        box = [widget]
+        if label is not None or "title" in schema:
+            # Extract the best guess for a title that we have
+            title = schema.get("title", label)
+
+            # Use the label as the backup tooltip
+            if tooltip is None:
+                tooltip = title
+
+            widget.description = title
+
+        # Make sure that the widget shows the tooltip
+        if tooltip is not None:
+            widget.tooltip = tooltip
+
+        def _register_observer(h, n, t):
+            widget.observe(h, names=n, type=t)
+
+        def _setter(_d):
+            widget.value = self.time_parse_func(_d)
+
+        def _resetter():
+            # Apply a potential default
+            if "default" in schema:
+                widget.value = self.time_parse_func(schema["default"])
+            else:
+                widget.value = datetime.datetime.now()
+
+        def _getter():
+            if widget.value:
+                return self.time_fmt_func(widget.value)
+            return ""
+
+        # Trigger generation of defaults in construction
+        _resetter()
+
+        # Make sure the widget adapts to the outer layout
+        widget.layout = ipywidgets.Layout(width="100%")
+
+        # Make the placing of labels optional
+        box_type = ipywidgets.HBox
+        if self.vertically_place_labels:
+            box_type = ipywidgets.VBox
+
+        return self.construct_element(
+            getter=_getter,
+            setter=_setter,
+            resetter=_resetter,
+            widgets=[box_type(box, layout=ipywidgets.Layout(width="100%"))],
+            register_observer=_register_observer,
+        )
 
     def _construct_number(self, schema, label=None, root=False):
         kwargs = dict()

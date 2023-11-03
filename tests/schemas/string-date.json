@@ -1,0 +1,11 @@
+{
+  "default": "2018-11-13",
+  "schema": {
+    "default": "2018-11-13",
+    "format": "date",
+    "type": "string"
+  },
+  "valid": [
+    "2018-11-13"
+  ]
+}

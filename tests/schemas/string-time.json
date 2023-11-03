@@ -1,0 +1,11 @@
+{
+  "default": "20:20:39",
+  "schema": {
+    "default": "20:20:39",
+    "format": "time",
+    "type": "string"
+  },
+  "valid": [
+    "20:20:39"
+  ]
+}
