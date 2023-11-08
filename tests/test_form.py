@@ -24,6 +24,9 @@ def test_form(testcase, preconstruct):
         with pytest.raises((FormError, jsonschema.ValidationError)):
             form.data = doc
 
+@pytest.mark.parametrize("preconstruct", (0, 1))
+def test_form_with_descriptions(testcase, preconstruct):
+    form = Form(testcase["schema"], preconstruct_array_items=preconstruct, show_descriptions=True)
 
 def test_add_observer(testcase):
     # Try adding an observer

@@ -88,6 +88,7 @@ class Form:
         date_parse_func=datetime.date.fromisoformat,
         time_fmt_func=lambda dt: dt.isoformat(),
         time_parse_func=datetime.time.fromisoformat,
+        show_descriptions=False,
     ):
         """Create a form with Jupyter widgets from a JSON schema
 
@@ -128,6 +129,7 @@ class Form:
         self.date_parse_func = date_parse_func
         self.time_fmt_func = time_fmt_func
         self.time_parse_func = time_parse_func
+        self.show_descriptions = show_descriptions
 
         # Store a list of registered observers to add them to runtime-generated widgets
         self._observers = []
@@ -453,11 +455,18 @@ class Form:
         if self.vertically_place_labels:
             box_type = ipywidgets.VBox
 
+        box = box_type(box, layout=ipywidgets.Layout(width="100%"))
+
+        if self.show_descriptions:
+            layout = ipywidgets.Layout(display="flex", justify_content="flex-end")
+            style = dict(font_size="0.8em", font_weight="lighter")
+            box = ipywidgets.VBox([box, ipywidgets.Label(tooltip, layout=layout, style=style), ])
+
         return self.construct_element(
             getter=_getter,
             setter=_setter,
             resetter=_resetter,
-            widgets=[box_type(box, layout=ipywidgets.Layout(width="100%"))],
+            widgets=[box],
             register_observer=_register_observer,
         )
 
