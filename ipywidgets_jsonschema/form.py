@@ -1,3 +1,4 @@
+import copy
 import datetime
 
 from IPython.display import display
@@ -11,7 +12,7 @@ import json
 import os
 import re
 import traitlets
-
+import collections.abc
 
 # We are providing some compatibility for ipywidgets v7 and v8
 IS_VERSION_8 = version.parse(ipywidgets.__version__).major == 8
@@ -915,7 +916,11 @@ class Form:
     def _construct_anyof(self, schema, label=None, key="anyOf"):
         # If this is a trivial anyOf rule, we omit it:
         if len(schema[key]) == 1:
-            return self._construct(schema[key][0], label=label, root=False)
+            if key == "allOf":
+                sub_schema = deep_update_missing({k:v for k,v in schema.items() if k != key}, schema[key][0])
+            else:
+                sub_schema = schema[key][0]
+            return self._construct(sub_schema, label=label, root=False)
 
         # The list of subelements and their descriptive names
         names = []
@@ -968,3 +973,14 @@ class Form:
             subelements=elements,
             register_observer=_register_observer,
         )
+
+
+def deep_update_missing(target, source):
+    target = target.copy()
+    for k, v in source.items():
+        if k in target:
+            if isinstance(v, collections.abc.Mapping) and isinstance(target[k], collections.abc.Mapping):
+                target[k] = deep_update_missing(target[k], v)
+        else:
+            target[k] = v
+    return target
