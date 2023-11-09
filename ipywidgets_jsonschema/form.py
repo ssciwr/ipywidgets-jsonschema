@@ -917,7 +917,9 @@ class Form:
         # If this is a trivial anyOf rule, we omit it:
         if len(schema[key]) == 1:
             if key == "allOf":
-                sub_schema = deep_update_missing({k:v for k,v in schema.items() if k != key}, schema[key][0])
+                sub_schema = deep_update_missing(
+                    {k: v for k, v in schema.items() if k != key}, schema[key][0]
+                )
             else:
                 sub_schema = schema[key][0]
             return self._construct(sub_schema, label=label, root=False)
@@ -979,7 +981,9 @@ def deep_update_missing(target, source):
     target = target.copy()
     for k, v in source.items():
         if k in target:
-            if isinstance(v, collections.abc.Mapping) and isinstance(target[k], collections.abc.Mapping):
+            if isinstance(v, collections.abc.Mapping) and isinstance(
+                target[k], collections.abc.Mapping
+            ):
                 target[k] = deep_update_missing(target[k], v)
         else:
             target[k] = v

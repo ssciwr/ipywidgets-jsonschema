@@ -1,23 +1,22 @@
 {
   "default": "A",
   "schema": {
-    "default": "A",
     "allOf": [
       {
-        "title": "all of enum",
         "description": "An enumeration.",
         "enum": [
           "A",
           "B",
           "C"
         ],
+        "title": "all of enum",
         "type": "string"
       }
-    ]
+    ],
+    "default": "A"
   },
   "valid": [
     "B",
     "C"
   ]
 }
-

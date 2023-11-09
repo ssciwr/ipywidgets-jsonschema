@@ -16,17 +16,12 @@ def test_update_missing_ignore():
 
 
 def test_update_missing_deep_insert():
-    target = {"A":
-        {
+    target = {
+        "A": {
             "B": {"E": 4},
         }
     }
-    source = {"A":
-        {
-            "B": {"E": 3, "F": 5},
-            "E": 4
-        }
-    }
+    source = {"A": {"B": {"E": 3, "F": 5}, "E": 4}}
     result = deep_update_missing(target, source)
     assert result["A"]["B"]["E"] == 4
     assert result["A"]["B"]["F"] == 5
