@@ -26,7 +26,8 @@ def test_form(testcase, preconstruct):
 
 @pytest.mark.parametrize("preconstruct", (0, 1))
 def test_form_with_descriptions(testcase, preconstruct):
-    form = Form(testcase["schema"], preconstruct_array_items=preconstruct, show_descriptions=True)
+    # simple smoke test to see if generation with descriptions runs withour errors
+    Form(testcase["schema"], preconstruct_array_items=preconstruct, show_descriptions=True)
 
 def test_add_observer(testcase):
     # Try adding an observer
