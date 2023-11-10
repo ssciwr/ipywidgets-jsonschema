@@ -460,7 +460,12 @@ class Form:
         if self.show_descriptions:
             layout = ipywidgets.Layout(display="flex", justify_content="flex-end")
             style = dict(font_size="0.8em", font_weight="lighter")
-            box = ipywidgets.VBox([box, ipywidgets.Label(tooltip, layout=layout, style=style), ])
+            box = ipywidgets.VBox(
+                [
+                    box,
+                    ipywidgets.Label(tooltip, layout=layout, style=style),
+                ]
+            )
 
         return self.construct_element(
             getter=_getter,
