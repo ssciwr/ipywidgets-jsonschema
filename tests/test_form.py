@@ -25,6 +25,11 @@ def test_form(testcase, preconstruct):
             form.data = doc
 
 
+def test_form_with_descriptions(testcase):
+    # simple smoke test to see if generation with descriptions runs withour errors
+    Form(testcase["schema"], show_descriptions=True)
+
+
 def test_add_observer(testcase):
     # Try adding an observer
     form = Form(testcase["schema"])

@@ -2,6 +2,7 @@
   "default": "2018-11-13T20:20:39+00:00",
   "schema": {
     "default": "2018-11-13T20:20:39+00:00",
+    "description": "Bla bla",
     "format": "date-time",
     "type": "string"
   },

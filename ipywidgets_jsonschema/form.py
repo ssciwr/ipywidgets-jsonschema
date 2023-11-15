@@ -88,6 +88,7 @@ class Form:
         date_parse_func=datetime.date.fromisoformat,
         time_fmt_func=lambda dt: dt.isoformat(),
         time_parse_func=datetime.time.fromisoformat,
+        show_descriptions=False,
     ):
         """Create a form with Jupyter widgets from a JSON schema
 
@@ -128,6 +129,7 @@ class Form:
         self.date_parse_func = date_parse_func
         self.time_fmt_func = time_fmt_func
         self.time_parse_func = time_parse_func
+        self.show_descriptions = show_descriptions
 
         # Store a list of registered observers to add them to runtime-generated widgets
         self._observers = []
@@ -246,6 +248,19 @@ class Form:
         accordion.selected_index = None
         return [accordion]
 
+    def _wrap_description(self, widget, tooltip):
+        if self.show_descriptions and tooltip:
+            layout = ipywidgets.Layout(display="flex", justify_content="flex-end")
+            style = dict(font_size="0.8em", font_weight="lighter")
+            widget = ipywidgets.VBox(
+                [
+                    widget,
+                    ipywidgets.Label(tooltip, layout=layout, style=style),
+                ]
+            )
+
+        return widget
+
     def _construct_object(self, schema, label=None, root=False):
         # Construct form elements for all the fields, including some that are
         # added through 'if'-'then' rules. This maps key -> FormElement
@@ -359,6 +374,16 @@ class Form:
         # Ensure that defaults are initialized
         _resetter()
 
+        if self.show_descriptions:
+            wrapped_widget_list = [
+                self._wrap_description(
+                    ipywidgets.VBox(
+                        wrapped_widget_list, layout=ipywidgets.Layout(width="100%")
+                    ),
+                    schema.get("description", None),
+                )
+            ]
+
         return self.construct_element(
             getter=_getter,
             setter=_setter,
@@ -453,11 +478,14 @@ class Form:
         if self.vertically_place_labels:
             box_type = ipywidgets.VBox
 
+        box = box_type(box, layout=ipywidgets.Layout(width="100%"))
+        box = self._wrap_description(box, tooltip)
+
         return self.construct_element(
             getter=_getter,
             setter=_setter,
             resetter=_resetter,
-            widgets=[box_type(box, layout=ipywidgets.Layout(width="100%"))],
+            widgets=[box],
             register_observer=_register_observer,
         )
 
@@ -515,11 +543,14 @@ class Form:
         if self.vertically_place_labels:
             box_type = ipywidgets.VBox
 
+        box = box_type(box, layout=ipywidgets.Layout(width="100%"))
+        box = self._wrap_description(box, tooltip)
+
         return self.construct_element(
             getter=_getter,
             setter=_setter,
             resetter=_resetter,
-            widgets=[box_type(box, layout=ipywidgets.Layout(width="100%"))],
+            widgets=[box],
             register_observer=_register_observer,
         )
 
@@ -574,11 +605,14 @@ class Form:
         if self.vertically_place_labels:
             box_type = ipywidgets.VBox
 
+        box = box_type(box, layout=ipywidgets.Layout(width="100%"))
+        box = self._wrap_description(box, tooltip)
+
         return self.construct_element(
             getter=_getter,
             setter=_setter,
             resetter=_resetter,
-            widgets=[box_type(box, layout=ipywidgets.Layout(width="100%"))],
+            widgets=[box],
             register_observer=_register_observer,
         )
 
@@ -633,11 +667,14 @@ class Form:
         if self.vertically_place_labels:
             box_type = ipywidgets.VBox
 
+        box = box_type(box, layout=ipywidgets.Layout(width="100%"))
+        box = self._wrap_description(box, tooltip)
+
         return self.construct_element(
             getter=_getter,
             setter=_setter,
             resetter=_resetter,
-            widgets=[box_type(box, layout=ipywidgets.Layout(width="100%"))],
+            widgets=[box],
             register_observer=_register_observer,
         )
 
@@ -892,6 +929,10 @@ class Form:
 
         # Initially call the resetter
         _resetter()
+
+        wrapped_vbox[0] = self._wrap_description(
+            wrapped_vbox[0], schema.get("description", None)
+        )
 
         return self.construct_element(
             getter=lambda: [h.getter() for h in elements[:element_size]],

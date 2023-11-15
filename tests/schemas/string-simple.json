@@ -2,6 +2,7 @@
   "default": "foo",
   "schema": {
     "default": "foo",
+    "description": "Bla bla",
     "type": "string"
   },
   "valid": [

@@ -1,6 +1,7 @@
 {
   "default": [],
   "schema": {
+    "description": "Bla bla",
     "items": {
       "default": "foo",
       "type": "string"
