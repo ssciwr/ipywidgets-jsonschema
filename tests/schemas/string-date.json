@@ -2,6 +2,7 @@
   "default": "2018-11-13",
   "schema": {
     "default": "2018-11-13",
+    "description": "Bla bla",
     "format": "date",
     "type": "string"
   },

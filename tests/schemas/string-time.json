@@ -2,6 +2,7 @@
   "default": "20:20:39",
   "schema": {
     "default": "20:20:39",
+    "description": "Bla bla",
     "format": "time",
     "type": "string"
   },

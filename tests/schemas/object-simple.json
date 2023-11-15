@@ -6,6 +6,7 @@
     "properties": {
       "foo": {
         "default": "bar",
+        "description": "Bla bla",
         "type": "string"
       }
     },
