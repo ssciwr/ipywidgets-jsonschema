@@ -10,6 +10,8 @@ jobs:
   pypi-deploy:
     name: Deploying Python Package
     runs-on: ubuntu-20.04
+    permissions:
+      id-token: write
 
     steps:
     - uses: actions/checkout@v4
@@ -24,7 +26,4 @@ jobs:
       run: |
         pipx run build --sdist
 
-    - uses: pypa/gh-action-pypi-publish@v1.8.10
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
+    - uses: pypa/gh-action-pypi-publish@v1
