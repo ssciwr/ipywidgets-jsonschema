@@ -19,7 +19,7 @@ jobs:
           # setuptools_scm requires a non-shallow clone of the repository
           fetch-depth: 0
 
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       name: Install Python
 
     - name: Build source distribution
