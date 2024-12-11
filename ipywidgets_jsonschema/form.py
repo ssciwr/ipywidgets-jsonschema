@@ -931,12 +931,19 @@ class Form:
         # Initially call the resetter
         _resetter()
 
+        def _getter():
+            result = [h.getter() for h in elements[:element_size]]
+            if schema.get("set", False):
+                if len(result) != len(set(result)):
+                    raise FormError("Array elements are not unique")
+            return result
+
         wrapped_vbox[0] = self._wrap_description(
             wrapped_vbox[0], schema.get("description", None)
         )
 
         return self.construct_element(
-            getter=lambda: [h.getter() for h in elements[:element_size]],
+            getter=_getter,
             setter=_setter,
             resetter=_resetter,
             widgets=wrapped_vbox,
