@@ -1,0 +1,30 @@
+{
+  "default": [],
+  "schema": {
+    "description": "Bla bla",
+    "items": {
+      "default": "foo",
+      "type": "string"
+    },
+    "uniqueItems": true,
+    "type": "array"
+  },
+  "valid": [
+    [
+      "foo"
+    ],
+    [
+      "1",
+      "2",
+      "3"
+    ]
+  ],
+  "invalid": [
+    [
+      "1",
+      "1",
+      "3"
+    ]
+  ]
+}
+
