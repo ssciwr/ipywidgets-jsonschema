@@ -76,6 +76,7 @@ def minmax_schema_rule(widget, schema):
 
 
 class Form:
+    print("demo")
     def __init__(
         self,
         schema,
@@ -217,7 +218,9 @@ class Form:
         # Handle other input based on the input type
         type_ = schema.get("type", None)
         if type_ is None:
-            raise FormError("Expecting type information for non-enum properties")
+             if "$ref" in schema:
+                  return self._construct_ref(schema, label=label)
+             raise FormError(f"Expecting type information for non-enum properties, schema: {schema}")
         if not isinstance(type_, str):
             raise FormError("Not accepting arrays of types currently")
 
@@ -266,7 +269,7 @@ class Form:
         # Construct form elements for all the fields, including some that are
         # added through 'if'-'then' rules. This maps key -> FormElement
         elements = {}
-
+    
         # Store the conditional information from the schema in the following form:
         # [(schema, cprop, element), ..]
         # with the following meaning:
@@ -274,104 +277,114 @@ class Form:
         #   cprop: The property that is maybe added
         #   element: The subelement for the property
         conditionals = []
-        for prop, subschema in schema["properties"].items():
-            elements[prop] = self._construct(subschema, label=prop)
-
-        # Add conditional elements
-        def add_conditional_elements(s):
-            # Check whether we have an if statement
-            cond = s.get("if", None)
-            if cond is None:
-                return
-
-            for cprop, csubschema in s.get("then", {}).get("properties", {}).items():
-                celem = self._construct(csubschema, label=cprop)
-                conditionals.append((cond, cprop, celem))
-                elements[cprop] = celem
-
-            if "else" in s:
-                add_conditional_elements(s["else"])
-
-        add_conditional_elements(schema)
-
-        # Apply sorting to the keys
-        keys = schema["properties"].keys()
-        try:
-            keys = self.sorter(keys)
-        except TypeError:
-            # If the keys cannot be compared, we stick to the original order
-            pass
-
-        # Collect the list of widgets: First the regular ones, then conditional ones
-        widget_list = sum((elements[k].widgets for k in keys), [])
-        widget_list.extend(
-            [
-                ipywidgets.HBox(layout=ipywidgets.Layout(width="100%"))
-                for _ in range(len(conditionals))
-            ]
-        )
+    
+        if "properties" in schema:
+            for prop, subschema in schema["properties"].items():
+                elements[prop] = self._construct(subschema, label=prop)
+        
+            # Add conditional elements
+            def add_conditional_elements(s):
+                # Check whether we have an if statement
+                cond = s.get("if", None)
+                if cond is None:
+                    return
+    
+                for cprop, csubschema in s.get("then", {}).get("properties", {}).items():
+                    celem = self._construct(csubschema, label=cprop)
+                    conditionals.append((cond, cprop, celem))
+                    elements[cprop] = celem
+    
+                if "else" in s:
+                    add_conditional_elements(s["else"])
+    
+            add_conditional_elements(schema)
+    
+            # Apply sorting to the keys
+            keys = schema["properties"].keys()
+            try:
+                keys = self.sorter(keys)
+            except TypeError:
+                # If the keys cannot be compared, we stick to the original order
+                pass
+    
+            # Collect the list of widgets: First the regular ones, then conditional ones
+            widget_list = sum((elements[k].widgets for k in keys), [])
+            widget_list.extend(
+                [
+                    ipywidgets.HBox(layout=ipywidgets.Layout(width="100%"))
+                    for _ in range(len(conditionals))
+                ]
+            )
+        else:
+             widget_list=[]
 
         # Maybe wrap this in an Accordion widget
         wrapped_widget_list = widget_list
-        if not root and len(schema["properties"]) > 1:
+        if not root and len(schema.get("properties", {})) > 1:
             wrapped_widget_list = self._wrap_accordion(widget_list, schema, label=label)
 
         def _getter():
             # Get all regular properties
             result = {}
-            for k in schema["properties"].keys():
-                result[k] = elements[k].getter()
+            if "properties" in schema:
+                for k in schema["properties"].keys():
+                    result[k] = elements[k].getter()
 
-            # Add conditional properties
-            for cschema, cprop, celem in conditionals:
-                try:
-                    jsonschema.validate(instance=result, schema=cschema)
-                    result[cprop] = celem.getter()
-                except jsonschema.ValidationError:
-                    pass
+                # Add conditional properties
+                for cschema, cprop, celem in conditionals:
+                    try:
+                        jsonschema.validate(instance=result, schema=cschema)
+                        result[cprop] = celem.getter()
+                    except jsonschema.ValidationError:
+                        pass
+            elif "additionalProperties" in schema:
+                 result ={}
 
             return result
 
         def _setter(_d):
-            for k in elements.keys():
-                if k in _d:
-                    elements[k].setter(_d[k])
-                else:
-                    elements[k].resetter()
+             if "properties" in schema:
+                for k in elements.keys():
+                  if k in _d:
+                     elements[k].setter(_d[k])
+                  else:
+                      elements[k].resetter()
 
         def _register_observer(h, n, t):
-            for e in elements.values():
-                e.register_observer(h, n, t)
+            if "properties" in schema:
+                 for e in elements.values():
+                    e.register_observer(h, n, t)
 
         def _resetter():
-            for e in elements.values():
-                e.resetter()
+            if "properties" in schema:
+                for e in elements.values():
+                    e.resetter()
 
         # Add the conditional information
-        for i, (cschema, cprop, celem) in enumerate(conditionals):
+        if "properties" in schema:
+            for i, (cschema, cprop, celem) in enumerate(conditionals):
 
-            def create_observer(j, s, prop, e):
-                def _cond_observer(_):
-                    # Check whether our data matches the given schema
-                    try:
-                        jsonschema.validate(instance=_getter(), schema=s)
-                        elements[prop] = e
-                        widget_list[len(keys) + j].children = e.widgets
-                    except jsonschema.ValidationError:
-                        widget_list[len(keys) + j].children = []
+                def create_observer(j, s, prop, e):
+                    def _cond_observer(_):
+                        # Check whether our data matches the given schema
+                        try:
+                            jsonschema.validate(instance=_getter(), schema=s)
+                            elements[prop] = e
+                            widget_list[len(keys) + j].children = e.widgets
+                        except jsonschema.ValidationError:
+                            widget_list[len(keys) + j].children = []
 
-                # We need to call the observer once so that we get a correctly
-                # initialized widget, because otherwise it triggers only if it
-                # differs from the default.
-                _cond_observer({})
+                    # We need to call the observer once so that we get a correctly
+                    # initialized widget, because otherwise it triggers only if it
+                    # differs from the default.
+                    _cond_observer({})
 
-                return _cond_observer
+                    return _cond_observer
 
-            for k in cschema.get("properties", {}).keys():
-                elements[k].register_observer(
-                    create_observer(i, cschema, cprop, celem), "value", "change"
-                )
-
+                for k in cschema.get("properties", {}).keys():
+                   elements[k].register_observer(
+                       create_observer(i, cschema, cprop, celem), "value", "change"
+                     )
         # Ensure that defaults are initialized
         _resetter()
 
@@ -393,6 +406,7 @@ class Form:
             subelements=elements,
             register_observer=_register_observer,
         )
+
 
     def _construct_simple(self, schema, widget, label=None, root=False):
         # Extract the best description that we have
@@ -943,7 +957,7 @@ class Form:
             subelements=elements,
             register_observer=_register_observer,
         )
-
+    
     def _construct_enum(self, schema, label=None, root=False):
         # We omit trivial enums, but make sure that they end up in the result
         if len(schema["enum"]) == 1:
@@ -970,14 +984,25 @@ class Form:
         elements = []
 
         # Iterate over the given subschema
-        for s in schema[key]:
+        for i,s in enumerate(schema[key]):
+          
             if "title" in s:
                 names.append(s["title"])
-                elements.append(self._construct(s))
+            elif "$ref" in s:
+                names.append(s["$ref"].split("/")[-1])
+            elif "type" in s:
+                 if s["type"] == "object" and "properties" in s and "title" in s["properties"]:
+                    names.append(s["properties"]["title"]["const"])
+                 else:
+                   names.append(s["type"])   
+            elif "additionalProperties" in s and "title" in schema:
+               names.append(f"Option {len(names) + 1}")
+            
             else:
-                raise FormError(
-                    "Schemas within anyOf/oneOf/allOf need to set the title field"
-                )
+                names.append(f"Option {len(names) + 1}")
+            
+            
+            elements.append(self._construct(s))
 
         # Create the selector and subschema widget
         selector = ipywidgets.Dropdown(options=names, value=names[0])
@@ -996,12 +1021,17 @@ class Form:
                     selector.value = names[i]
                     _select(None)
                     elements[i].setter(_d)
+                    return # Exit if one schema matches
+
                 except jsonschema.ValidationError:
-                    pass
+                   pass
 
         def _resetter():
             for e in elements:
                 e.resetter()
+            if "default" in schema and schema["default"] is not None:
+               _setter(schema["default"])
+
 
         def _register_observer(h, n, t):
             selector.observe(h, names=n, type=t)
@@ -1017,6 +1047,9 @@ class Form:
             register_observer=_register_observer,
         )
 
+    def _construct_ref(self, schema, label=None):
+        ref = schema["$ref"].split("/")[-1]
+        return self._construct(self.schema["$defs"][ref],label=label)
 
 def deep_update_missing(target, source):
     target = target.copy()
