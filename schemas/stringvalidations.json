@@ -1,0 +1,33 @@
+{
+  "properties": {
+    "min_length": {
+      "minLength": 3,
+      "title": "Min Length",
+      "type": "string"
+    },
+    "max_length": {
+      "maxLength": 10,
+      "title": "Max Length",
+      "type": "string"
+    },
+    "pattern": {
+      "pattern": "^[a-zA-Z0-9]+$",
+      "title": "Pattern",
+      "type": "string"
+    },
+    "password": {
+      "format": "password",
+      "title": "Password",
+      "type": "string",
+      "writeOnly": true
+    }
+  },
+  "required": [
+    "min_length",
+    "max_length",
+    "pattern",
+    "password"
+  ],
+  "title": "StringValidations",
+  "type": "object"
+}

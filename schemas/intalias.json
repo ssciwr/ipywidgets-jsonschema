@@ -1,0 +1,13 @@
+{
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id"
+  ],
+  "title": "IntAlias",
+  "type": "object"
+}

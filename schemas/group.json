@@ -1,0 +1,19 @@
+{
+  "properties": {
+    "ids": {
+      "items": {
+        "type": "integer"
+      },
+      "maxItems": 10,
+      "minItems": 1,
+      "set": true,
+      "title": "Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "ids"
+  ],
+  "title": "Group",
+  "type": "object"
+}

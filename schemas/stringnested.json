@@ -1,0 +1,41 @@
+{
+  "$defs": {
+    "Address": {
+      "properties": {
+        "street": {
+          "title": "Street",
+          "type": "string"
+        },
+        "city": {
+          "title": "City",
+          "type": "string"
+        }
+      },
+      "required": [
+        "street",
+        "city"
+      ],
+      "title": "Address",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "adresses": {
+      "items": {
+        "$ref": "#/$defs/Address"
+      },
+      "title": "Adresses",
+      "type": "array"
+    }
+  },
+  "required": [
+    "name",
+    "adresses"
+  ],
+  "title": "StringNested",
+  "type": "object"
+}

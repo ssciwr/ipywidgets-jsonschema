@@ -1,0 +1,22 @@
+{
+  "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "settings": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "min_properties": 1,
+      "title": "Settings",
+      "type": "object"
+    }
+  },
+  "required": [
+    "name",
+    "settings"
+  ],
+  "title": "DictMinProperties",
+  "type": "object"
+}

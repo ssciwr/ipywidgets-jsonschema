@@ -1,0 +1,14 @@
+{
+  "properties": {
+    "ip": {
+      "format": "ipvanyaddress",
+      "title": "Ip",
+      "type": "string"
+    }
+  },
+  "required": [
+    "ip"
+  ],
+  "title": "IpModel",
+  "type": "object"
+}

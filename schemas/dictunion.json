@@ -1,0 +1,23 @@
+{
+  "properties": {
+    "settings": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "title": "Settings",
+      "type": "object"
+    }
+  },
+  "required": [
+    "settings"
+  ],
+  "title": "DictUnion",
+  "type": "object"
+}

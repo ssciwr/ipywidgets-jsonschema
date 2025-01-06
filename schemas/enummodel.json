@@ -1,0 +1,40 @@
+{
+  "$defs": {
+    "UserType": {
+      "enum": [
+        "admin",
+        "user",
+        "guest"
+      ],
+      "title": "UserType",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "user_type": {
+      "$ref": "#/$defs/UserType"
+    },
+    "status": {
+      "enum": [
+        "active",
+        "inactive",
+        "pending"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "level": {
+      "maximum": 5,
+      "minimum": 1,
+      "title": "Level",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "user_type",
+    "status",
+    "level"
+  ],
+  "title": "EnumModel",
+  "type": "object"
+}

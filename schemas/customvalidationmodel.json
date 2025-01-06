@@ -1,0 +1,18 @@
+{
+  "properties": {
+    "username": {
+      "title": "Username",
+      "type": "string"
+    },
+    "email": {
+      "title": "Email",
+      "type": "string"
+    }
+  },
+  "required": [
+    "username",
+    "email"
+  ],
+  "title": "CustomValidationModel",
+  "type": "object"
+}

@@ -1,0 +1,18 @@
+{
+  "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "breed": {
+      "title": "Breed",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "breed"
+  ],
+  "title": "Dog",
+  "type": "object"
+}

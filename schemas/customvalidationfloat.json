@@ -1,0 +1,23 @@
+{
+  "properties": {
+    "discount_type": {
+      "title": "Discount Type",
+      "type": "string"
+    },
+    "amount": {
+      "title": "Amount",
+      "type": "number"
+    },
+    "min_purchase": {
+      "title": "Min Purchase",
+      "type": "number"
+    }
+  },
+  "required": [
+    "discount_type",
+    "amount",
+    "min_purchase"
+  ],
+  "title": "CustomValidationFloat",
+  "type": "object"
+}

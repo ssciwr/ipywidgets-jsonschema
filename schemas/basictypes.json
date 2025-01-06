@@ -1,0 +1,33 @@
+{
+  "properties": {
+    "string_field": {
+      "title": "String Field",
+      "type": "string"
+    },
+    "int_field": {
+      "title": "Int Field",
+      "type": "integer"
+    },
+    "float_field": {
+      "title": "Float Field",
+      "type": "number"
+    },
+    "bool_field": {
+      "title": "Bool Field",
+      "type": "boolean"
+    },
+    "none_field": {
+      "title": "None Field",
+      "type": "null"
+    }
+  },
+  "required": [
+    "string_field",
+    "int_field",
+    "float_field",
+    "bool_field",
+    "none_field"
+  ],
+  "title": "BasicTypes",
+  "type": "object"
+}
