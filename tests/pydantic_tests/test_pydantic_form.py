@@ -27,20 +27,6 @@ from typing import Optional
 from pydantic import PrivateAttr
 from typing import Any
 from typing import List
-class BaseTestModel(BaseModel):
-
-    #Decorator used in case for inheritance
-    @classmethod
-    def valid_cases(cls):
-        pass
-    @classmethod
-    def invalid_cases(cls):
-        pass
-    @classmethod
-    def default_values(cls):
-        pass
-
-
 class SimpleModel(BaseModel):
     id: int
     name: str
@@ -65,7 +51,7 @@ class SimpleModel(BaseModel):
 class Address(BaseModel):
     street: str
     city: str
-class StringNested(BaseModel):
+class NestedModelStrings(BaseModel):
     name: str
     addresses: List[Address]
     @classmethod
@@ -100,6 +86,50 @@ class StringAndInt(BaseModel):
         """Provide default values for the model."""
         return {"name": "", "age" : 0}
 
+class StringFormats(BaseModel):
+    email: str = Field(format='email')
+    hostname : str = Field(format='hostname')
+    ip4address: str = Field(format='ipv4')
+    ip6address: str = Field(format='ipv6')
+    uri: str = Field(format='uri')
+    uuid: str = Field(format='uuid')
+
+    @classmethod
+    def valid_cases(cls):
+        return [
+            {
+                "email": "example@test.com",
+                "hostname": "example.com",
+                "ip4address": "192.168.1.1",
+                "ip6address": "2001:0000:130F:0000:0000:09C0:876A:130B",
+                "uri": "https://example.com",
+                "uuid": "550e8400-e29b-41d4-a716-446655440000",
+            }
+        ]
+
+    @classmethod
+    def invalid_cases(cls):
+         return [
+            {
+                "email": "exampletest.com",
+                "hostname": "exa_mple.com",
+                "ip4address": "192.168.1.1000",
+                "ip6address": "::1000",
+                "uri": "https://example.com",
+                "uuid": "550e8400-e29b-41d4-a716-446655440000XXXXXX",
+            }
+        ]
+
+    @classmethod
+    def default_values(cls):
+        return {
+            "email": "",
+            "hostname": "",
+            "ip4address": "",
+            "ip6address": "",
+            "uri": "",
+            "uuid": "",
+        }
 class StringMinLengthMaxLengthContraint(BaseModel):
     username: str = Field(..., min_length = 3, max_length=30)
     email: str = Field(..., format='email')
@@ -256,7 +286,7 @@ class StringPrivateField(BaseModel):
 class Animal(BaseModel):
     name: str
 
-class Dog(Animal):
+class InheritanceModelDog(Animal):
     breed: str
     @classmethod
     def valid_cases(cls):
@@ -274,7 +304,7 @@ class Dog(Animal):
         return {"breed" : "" , "name": ""}
 
 
-class Category(BaseModel):
+class RecursiveModelCategory(BaseModel):
     name: str
     subcategories: List['Category']
     @classmethod
@@ -448,7 +478,7 @@ class IpModel(BaseModel):
         """Provide default values for the model."""
         return {"ip": ""}
 
-class DynamicConfig(BaseTestModel):
+class DynamicConfig(BaseModel):
     raw_json: Json
     metadata: Dict[str, Any]
     settings_json: Json[Dict[str, Any]]
@@ -481,7 +511,7 @@ class DynamicConfig(BaseTestModel):
 
 
 
-class OptionalModel(BaseTestModel):
+class OptionalModel(BaseModel):
     field1: Optional[str] = None
     field2: Optional[int] = None
     field3: Optional[List[str]] = None
@@ -507,11 +537,12 @@ class OptionalModel(BaseTestModel):
         return {"field1": None, "field2": None, "field3": None}  # All fields default to `None`
 
 TEST_CASES = [
-    SimpleModel, StringNested, StringAndInt, StringMinLengthMaxLengthContraint, FloatMultipleOfMinumumContraint,
-    StringRegex, Group,DictMinProperties,StringWithAnnotations,FixedArraySize,IntAlias,StringPrivateField,Dog,Category,LiteralModel,
+    SimpleModel, NestedModelStrings, StringFormats, StringAndInt, StringMinLengthMaxLengthContraint, FloatMultipleOfMinumumContraint,
+    StringRegex, Group,DictMinProperties,StringWithAnnotations,FixedArraySize,IntAlias,StringPrivateField,InheritanceModelDog,
+    RecursiveModelCategory,LiteralModel,
     ListEnum, ModelAnnotated, Item, UnionIntFloat, DictUnion, Generics, IpModel,DynamicConfig, OptionalModel
 ]
-@pytest.mark.parametrize("model", TEST_CASES)
+#@pytest.mark.parametrize("model", TEST_CASES)
 @pytest.mark.parametrize("preconstruct", (0, 1))
 def test_model_to_json_schema(model, preconstruct):
     schema = model.model_json_schema()

@@ -9,6 +9,9 @@ def load_models():
     models_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "models/*.py")
     for filepath in glob.glob(models_path):
         module_name = os.path.splitext(os.path.basename(filepath))[0]
+        #Skip TestModel.py or __init__.py
+        if module_name in ("TestModel", "__init__"):
+            continue
         spec = importlib.util.spec_from_file_location(module_name, filepath)
         try:
             module = importlib.util.module_from_spec(spec)
