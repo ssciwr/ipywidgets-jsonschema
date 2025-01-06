@@ -507,27 +507,6 @@ class OptionalModel(BaseTestModel):
 
 
 
-MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
-_model_modules = []
-
-for filename in os.listdir(MODELS_DIR):
-    if filename.endswith(".py") and filename != "base_test_model.py":
-        module_name = f"models.{filename[:-3]}"
-        _model_modules.append(module_name)
-
-# Import all discovered models
-TEST_CASES = []
-for module_name in _model_modules:
-    module = importlib.import_module(module_name)
-    for name in dir(module):
-        cls = getattr(module, name)
-        if isinstance(cls, type) and issubclass(cls, BaseModel) and cls != BaseModel:
-            TEST_CASES.append(cls)
-
-
-#TEST_CASES = [SimpleModel, StringNested, StringAndInt, StringMinLengthMaxLengthContraint]
-
-@pytest.mark.parametrize("model", TEST_CASES)
 @pytest.mark.parametrize("preconstruct", (0, 1))
 def test_model_to_json_schema(model, preconstruct):
     schema = model.model_json_schema()
