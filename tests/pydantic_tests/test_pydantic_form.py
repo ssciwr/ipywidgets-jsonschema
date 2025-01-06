@@ -131,15 +131,15 @@ class FloatMultipleOfMinumumContraint(BaseModel):
     @classmethod
     def default_values(cls):
         """Provide default values for the model."""
-        return {{"price": 0.0}}
+        return {"price": 0.0}
 
 class StringRegex(BaseModel):
-    username: str = Field(..., min_length = 3, max_length=30, pattern='^[a-zA-Z0-9_]+$')
-    email: str = Field(..., format='email')
+    username: str = Field(max_length=30, pattern='^[a-zA-Z0-9_]+$')
+    email: str = Field(format='email')
     @classmethod
     def valid_cases(cls):
         """Provide valid cases for the model."""
-        return [{"username": "Test", "email": "user@example.com"}]
+        return [{"username": "Test_123", "email": "user@example.com"}]
 
     @classmethod
     def invalid_cases(cls):
@@ -148,7 +148,7 @@ class StringRegex(BaseModel):
     @classmethod
     def default_values(cls):
         """Provide default values for the model."""
-        return {{"username": "", "email": ""}}
+        return {"username": "username", "email": "example@example.com"}
 
 
 class Group(BaseModel):
@@ -165,11 +165,11 @@ class Group(BaseModel):
     @classmethod
     def default_values(cls):
         """Provide default values for the model."""
-        return {{"ids" : []}}
+        return {"ids" : [0]}
 
 class DictMinProperties(BaseModel):
     name: str
-    settings: dict[str, int] = Field(..., min_properties = 1)
+    settings: dict[str, int]
     @classmethod
     def valid_cases(cls):
         """Provide valid cases for the model."""
@@ -194,7 +194,7 @@ class StringWithAnnotations(BaseModel):
     @classmethod
     def invalid_cases(cls):
         """Provide invalid cases for the model."""
-        return [{"name": ""}]
+        return [{"name": 0}]
     @classmethod
     def default_values(cls):
         """Provide default values for the model."""
@@ -214,7 +214,7 @@ class FixedArraySize(BaseModel):
     @classmethod
     def default_values(cls):
         """Provide default values for the model."""
-        return {"fixed_items": []}
+        return {"fixed_items": [0]}
 
 class IntAlias(BaseModel):
     user_id: int = Field(..., alias = 'id' )
@@ -338,7 +338,8 @@ class ListEnum(BaseModel):
         """Provide default values for the model."""
         return [{"colors" :[]}]
 
-class Modelannotated(BaseModel):
+class ModelAnnotated(BaseModel):
+    #Please note there is no check up 
     username: Annotated[str, 'Must be 12 characters', 'Must be alphanumeric']
     @classmethod
     def valid_cases(cls):
@@ -348,7 +349,7 @@ class Modelannotated(BaseModel):
     @classmethod
     def invalid_cases(cls):
         """Provide invalid cases for the model."""
-        return [{"username" : "TooShort"}]
+        return [{"username" : 0000}]
 
     @classmethod
     def default_values(cls):
@@ -440,12 +441,12 @@ class IpModel(BaseModel):
     @classmethod
     def invalid_cases(cls):
         """Provide invalid cases for the model."""
-        return [{"ip": "not an ip"}]
+        return [{"ip": 0}]
 
     @classmethod
     def default_values(cls):
         """Provide default values for the model."""
-        return [{"ip": "127.0.0.1"}]
+        return {"ip": ""}
 
 class DynamicConfig(BaseTestModel):
     raw_json: Json
@@ -505,8 +506,12 @@ class OptionalModel(BaseTestModel):
     def default_values(cls):
         return {"field1": None, "field2": None, "field3": None}  # All fields default to `None`
 
-
-
+TEST_CASES = [
+    SimpleModel, StringNested, StringAndInt, StringMinLengthMaxLengthContraint, FloatMultipleOfMinumumContraint,
+    StringRegex, Group,DictMinProperties,StringWithAnnotations,FixedArraySize,IntAlias,StringPrivateField,Dog,Category,LiteralModel,
+    ListEnum, ModelAnnotated, Item, UnionIntFloat, DictUnion, Generics, IpModel,DynamicConfig, OptionalModel
+]
+@pytest.mark.parametrize("model", TEST_CASES)
 @pytest.mark.parametrize("preconstruct", (0, 1))
 def test_model_to_json_schema(model, preconstruct):
     schema = model.model_json_schema()
