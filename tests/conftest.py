@@ -13,7 +13,7 @@ for filename in glob.glob(
     with open(filename, "r") as f:
         _test_data.append(json.load(f))
         _test_names.append(os.path.basename(filename))
-# Import pydantic models as modules from the models subdirectory
+# Import pydantic models from the models subdirectory
 models = []
 models_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "models/*.py")
 for filepath in glob.glob(models_path):
@@ -32,7 +32,7 @@ for filepath in glob.glob(models_path):
 def pytest_generate_tests(metafunc):
     if "testcase" in metafunc.fixturenames:
         metafunc.parametrize("testcase", _test_data, ids=_test_names)
-        
+
     if "model" in metafunc.fixturenames:
         metafunc.parametrize("model", models, ids=[model.__name__ for model in models])
 
