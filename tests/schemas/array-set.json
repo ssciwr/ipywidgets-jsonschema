@@ -1,14 +1,21 @@
 {
   "default": [],
+  "invalid": [
+    [
+      "1",
+      "1",
+      "3"
+    ]
+  ],
   "schema": {
     "description": "Bla bla",
     "items": {
       "default": "foo",
       "type": "string"
     },
-    "uniqueItems": true,
     "set": true,
-    "type": "array"
+    "type": "array",
+    "uniqueItems": true
   },
   "valid": [
     [
@@ -19,13 +26,5 @@
       "2",
       "3"
     ]
-  ],
-  "invalid": [
-    [
-      "1",
-      "1",
-      "3"
-    ]
   ]
 }
-
