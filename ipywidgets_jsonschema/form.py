@@ -439,6 +439,19 @@ class Form:
         def _register_observer(h, n, t):
             widget.observe(h, names=n, type=t)
 
+        warning_label = ipywidgets.Label("", layout=ipywidgets.Layout(color="red", display="none"))
+        def _observer(change):
+            if not pattern_checker(widget.value):
+                pattern = schema.get("pattern", ".*")
+                warning_label.value = f"Warning: Input does not match the specified pattern"
+                warning_label.layout.display = "block"
+                change.owner.layout.border = "2px solid red"
+            else:
+                change.owner.layout.border = "none"
+                warning_label.value = ""
+                warning_label.layout.display = "none"
+
+        widget.observe(_observer, names="value", type="change")
         def _setter(_d):
             if pattern_checker(_d):
                 widget.value = _d
@@ -486,7 +499,7 @@ class Form:
             getter=_getter,
             setter=_setter,
             resetter=_resetter,
-            widgets=[box],
+            widgets=[box, warning_label],
             register_observer=_register_observer,
         )
 
