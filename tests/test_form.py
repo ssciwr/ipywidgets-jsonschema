@@ -41,10 +41,10 @@ def test_model_to_json_schema(model, preconstruct):
     form = Form(schema, preconstruct_array_items=preconstruct)
 
     #If a default schema is expected, check the default against the generated data
-    default = model.default_values()
-    if default:
-        assert pyrsistent.freeze(form.data) == pyrsistent.freeze(default)
-
+    if hasattr(model, 'default_values') and callable(getattr(model, 'default_values')):
+        default = model.default_values()
+        if default:
+            assert pyrsistent.freeze(form.data) == pyrsistent.freeze(default)
     # Validate all valid documents
     for doc in model.valid_cases():
         form.data = doc

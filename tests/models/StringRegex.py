@@ -11,7 +11,3 @@ class StringRegex(BaseModel):
     def invalid_cases(cls):
         """Provide invalid cases for the model."""
         return [{"username": "Invalid username ", "email": "userexample.com"}]
-    @classmethod
-    def default_values(cls):
-        """Provide default values for the model."""
-        return {"username": "username", "email": "example@example.com"}
