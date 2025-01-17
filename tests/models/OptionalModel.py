@@ -24,4 +24,4 @@ class OptionalModel(BaseModel):
 
     @classmethod 
     def default_values(cls): 
-        return {"field1": None, "field2": None, "field3": None}
+        return {"field1": "", "field2": 0, "field3": []}
