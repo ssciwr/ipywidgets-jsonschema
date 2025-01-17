@@ -1,0 +1,25 @@
+{
+    "schema": {
+        "properties": {
+            "value": {
+                "anyOf":[
+                { "type":"string"},
+                { "type":"integer"},
+                { "type":"null"}
+                ],
+            "default": null
+            }
+        },
+        "type":"object"
+    },
+    "valid": [
+        { "value":"hello"},
+        { "value": 123},
+        { "value": null},
+        {}
+    ]
+    ,
+    "invalid": [
+        { "value" : 123.3}
+    ]
+}
