@@ -76,7 +76,6 @@ def minmax_schema_rule(widget, schema):
 
 
 class Form:
-    print("demo 123")
     def __init__(
         self,
         schema,
