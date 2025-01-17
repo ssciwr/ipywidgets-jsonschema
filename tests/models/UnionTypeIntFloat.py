@@ -15,4 +15,4 @@ class UnionTypeIntFloat(BaseModel):
     @classmethod
     def default_values(cls):
         """Provide default values for the model."""
-        return [{"price" : 0}]
+        return {"price": 0}

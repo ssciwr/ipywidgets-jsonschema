@@ -76,7 +76,7 @@ def minmax_schema_rule(widget, schema):
 
 
 class Form:
-    print("demo")
+    print("demo 123")
     def __init__(
         self,
         schema,
@@ -133,6 +133,7 @@ class Form:
         self.time_parse_func = time_parse_func
         self.show_descriptions = show_descriptions
 
+        self._construction_stack = []
         # Store a list of registered observers to add them to runtime-generated widgets
         self._observers = []
 
@@ -199,6 +200,10 @@ class Form:
         self._form_element.setter(_data)
 
     def _construct(self, schema, label=None, root=False):
+        if schema in self._construction_stack:
+            return self.construct_element()
+        self._construction_stack.append(schema)
+        
         # Enumerations are handled a dropdowns
         if "enum" in schema:
             return self._construct_enum(schema, label=label)
@@ -218,9 +223,9 @@ class Form:
         # Handle other input based on the input type
         type_ = schema.get("type", None)
         if type_ is None:
-             if "$ref" in schema:
-                  return self._construct_ref(schema, label=label)
-             raise FormError(f"Expecting type information for non-enum properties, schema: {schema}")
+            if "$ref" in schema:
+                return self._construct_ref(schema, label=label)
+            raise FormError(f"Expecting type information for non-enum properties, schema: {schema}")
         if not isinstance(type_, str):
             raise FormError("Not accepting arrays of types currently")
 
@@ -228,11 +233,12 @@ class Form:
         format_ = schema.get("format", None)
         if format_ is not None:
             if (IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_8) or (
-                not IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_7
-            ):
+                not IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_7):
                 type_ = format_.replace("-", "_")
 
-        return getattr(self, f"_construct_{type_}")(schema, label=label, root=root)
+        result = getattr(self, f"_construct_{type_}")(schema, label=label, root=root)
+        self._construction_stack.pop()
+        return result
 
     def _wrap_accordion(self, widget_list, schema, label=None):
         titles = []
@@ -874,10 +880,11 @@ class Form:
                 up.on_click(move(-1))
                 down.on_click(move(1))
 
-                # Construct the final widget including array controls
-                children = [
-                    recelem.widgets[0].children[0],
-                ]
+                children = []
+                if recelem.widgets and recelem.widgets[0].children:
+                    children = [
+                        recelem.widgets[0].children[0],
+                    ]
                 if not fixed_length:
                     children.append(
                         ipywidgets.HBox(
@@ -991,10 +998,10 @@ class Form:
             elif "$ref" in s:
                 names.append(s["$ref"].split("/")[-1])
             elif "type" in s:
-                 if s["type"] == "object" and "properties" in s and "title" in s["properties"]:
+                if s["type"] == "object" and "properties" in s and "title" in s["properties"]:
                     names.append(s["properties"]["title"]["const"])
-                 else:
-                   names.append(s["type"])   
+                else:
+                    names.append(s["type"])   
             elif "additionalProperties" in s and "title" in schema:
                names.append(f"Option {len(names) + 1}")
             

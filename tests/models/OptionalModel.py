@@ -22,6 +22,6 @@ class OptionalModel(BaseModel):
             {"field3": "not a list"},
         ]
 
-    @classmethod
-    def default_values(cls):
-        return {"field1": None, "field2": None, "field3": None}  # All fields default to `None`
+    @classmethod 
+    def default_values(cls): 
+        return {"field1": None, "field2": None, "field3": None}

@@ -15,4 +15,4 @@ class DictUnion(BaseModel):
     @classmethod
     def default_values(cls):
         """Provide default values for the model."""
-        return [{"settings" : {}}]
+        return {"settings" : {}}
