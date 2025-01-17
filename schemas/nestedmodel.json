@@ -2,10 +2,6 @@
   "$defs": {
     "Address": {
       "properties": {
-        "street": {
-          "title": "Street",
-          "type": "string"
-        },
         "city": {
           "title": "City",
           "type": "string"
@@ -17,6 +13,10 @@
         "postal_code": {
           "pattern": "^\\d{5}$",
           "title": "Postal Code",
+          "type": "string"
+        },
+        "street": {
+          "title": "Street",
           "type": "string"
         }
       },
@@ -31,15 +31,6 @@
     }
   },
   "properties": {
-    "id": {
-      "format": "uuid",
-      "title": "Id",
-      "type": "string"
-    },
-    "name": {
-      "title": "Name",
-      "type": "string"
-    },
     "addresses": {
       "items": {
         "$ref": "#/$defs/Address"
@@ -47,12 +38,21 @@
       "title": "Addresses",
       "type": "array"
     },
-    "primary_address": {
-      "$ref": "#/$defs/Address"
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
     },
     "metadata": {
       "title": "Metadata",
       "type": "object"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "primary_address": {
+      "$ref": "#/$defs/Address"
     }
   },
   "required": [

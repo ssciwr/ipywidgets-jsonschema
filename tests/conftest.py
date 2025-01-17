@@ -26,8 +26,13 @@ for filepath in glob.glob(models_path):
         print(f"Error loading module {module_name}: {e}")
         continue
     for cls in vars(module).values():
-        if isinstance(cls, type) and issubclass(cls, BaseModel) and cls is not BaseModel:
+        if (
+            isinstance(cls, type)
+            and issubclass(cls, BaseModel)
+            and cls is not BaseModel
+        ):
             models.append(cls)
+
 
 def pytest_generate_tests(metafunc):
     if "testcase" in metafunc.fixturenames:
@@ -35,5 +40,3 @@ def pytest_generate_tests(metafunc):
 
     if "model" in metafunc.fixturenames:
         metafunc.parametrize("model", models, ids=[model.__name__ for model in models])
-
-   

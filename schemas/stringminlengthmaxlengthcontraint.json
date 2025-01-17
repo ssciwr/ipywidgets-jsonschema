@@ -1,14 +1,14 @@
 {
   "properties": {
+    "email": {
+      "format": "email",
+      "title": "Email",
+      "type": "string"
+    },
     "username": {
       "maxLength": 30,
       "minLength": 3,
       "title": "Username",
-      "type": "string"
-    },
-    "email": {
-      "format": "email",
-      "title": "Email",
       "type": "string"
     }
   },

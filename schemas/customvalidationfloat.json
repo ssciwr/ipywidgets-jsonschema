@@ -1,12 +1,12 @@
 {
   "properties": {
-    "discount_type": {
-      "title": "Discount Type",
-      "type": "string"
-    },
     "amount": {
       "title": "Amount",
       "type": "number"
+    },
+    "discount_type": {
+      "title": "Discount Type",
+      "type": "string"
     },
     "min_purchase": {
       "title": "Min Purchase",

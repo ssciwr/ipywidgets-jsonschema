@@ -1,11 +1,11 @@
 {
   "properties": {
-    "username": {
-      "title": "Username",
-      "type": "string"
-    },
     "email": {
       "title": "Email",
+      "type": "string"
+    },
+    "username": {
+      "title": "Username",
       "type": "string"
     }
   },

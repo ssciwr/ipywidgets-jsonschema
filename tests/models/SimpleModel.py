@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class SimpleModel(BaseModel):
     id: int
     name: str
@@ -18,4 +19,4 @@ class SimpleModel(BaseModel):
     @classmethod
     def default_values(cls):
         """Provide default values for the model."""
-        return {'id': 0, 'name': '','active': True}
+        return {"id": 0, "name": "", "active": True}

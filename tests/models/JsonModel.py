@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 from typing import Json, Dict, Any
+
+
 class JsonModel(BaseModel):
     raw_json: Json
     metadata: Dict[str, Any]

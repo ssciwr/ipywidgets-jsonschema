@@ -35,13 +35,14 @@ def test_add_observer(testcase):
     form = Form(testcase["schema"])
     form.observe(print, names=("value", "selected_index"), type="change")
 
+
 @pytest.mark.parametrize("preconstruct", (0, 1))
 def test_model_to_json_schema(model, preconstruct):
     schema = model.model_json_schema()
     form = Form(schema, preconstruct_array_items=preconstruct)
 
-    #If a default schema is expected, check the default against the generated data
-    if hasattr(model, 'default_values') and callable(getattr(model, 'default_values')):
+    # If a default schema is expected, check the default against the generated data
+    if hasattr(model, "default_values") and callable(getattr(model, "default_values")):
         default = model.default_values()
         if default:
             assert pyrsistent.freeze(form.data) == pyrsistent.freeze(default)

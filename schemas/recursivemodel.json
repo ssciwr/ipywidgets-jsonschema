@@ -2,10 +2,6 @@
   "$defs": {
     "RecursiveModel": {
       "properties": {
-        "value": {
-          "title": "Value",
-          "type": "string"
-        },
         "children": {
           "default": [],
           "items": {
@@ -13,6 +9,10 @@
           },
           "title": "Children",
           "type": "array"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
         }
       },
       "required": [

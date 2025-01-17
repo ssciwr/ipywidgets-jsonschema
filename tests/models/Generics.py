@@ -1,11 +1,14 @@
 from pydantic import BaseModel
 from typing import TypeVar, Generic
 
-T = TypeVar('T')
+T = TypeVar("T")
+
+
 class Generics(BaseModel, Generic[T]):
     data: T
     status: int
     message: str
+
     @classmethod
     def valid_cases(cls):
         """Provide valid cases for the model."""

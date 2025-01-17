@@ -1,25 +1,38 @@
 {
-    "schema": {
-        "properties": {
-            "value": {
-                "anyOf":[
-                { "type":"string"},
-                { "type":"integer"},
-                { "type":"null"}
-                ],
-            "default": null
-            }
-        },
-        "type":"object"
+  "invalid": [
+    {
+      "value": 123.3
+    }
+  ],
+  "schema": {
+    "properties": {
+      "value": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
     },
-    "valid": [
-        { "value":"hello"},
-        { "value": 123},
-        { "value": null},
-        {}
-    ]
-    ,
-    "invalid": [
-        { "value" : 123.3}
-    ]
+    "type": "object"
+  },
+  "valid": [
+    {
+      "value": "hello"
+    },
+    {
+      "value": 123
+    },
+    {
+      "value": null
+    },
+    {}
+  ]
 }

@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, List
 
+
 class OptionalModel(BaseModel):
     field1: Optional[str] = None
     field2: Optional[int] = None
@@ -9,9 +10,9 @@ class OptionalModel(BaseModel):
     @classmethod
     def valid_cases(cls):
         return [
-            {},  
+            {},
             {"field1": "Test", "field2": 10, "field3": ["item1", "item2"]},
-            {"field1": None, "field2": None, "field3": None}, 
+            {"field1": None, "field2": None, "field3": None},
         ]
 
     @classmethod
@@ -22,6 +23,6 @@ class OptionalModel(BaseModel):
             {"field3": "not a list"},
         ]
 
-    @classmethod 
-    def default_values(cls): 
+    @classmethod
+    def default_values(cls):
         return {"field1": "", "field2": 0, "field3": []}

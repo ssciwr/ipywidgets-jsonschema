@@ -1,18 +1,13 @@
 {
   "properties": {
-    "min_length": {
-      "minLength": 3,
-      "title": "Min Length",
-      "type": "string"
-    },
     "max_length": {
       "maxLength": 10,
       "title": "Max Length",
       "type": "string"
     },
-    "pattern": {
-      "pattern": "^[a-zA-Z0-9]+$",
-      "title": "Pattern",
+    "min_length": {
+      "minLength": 3,
+      "title": "Min Length",
       "type": "string"
     },
     "password": {
@@ -20,6 +15,11 @@
       "title": "Password",
       "type": "string",
       "writeOnly": true
+    },
+    "pattern": {
+      "pattern": "^[a-zA-Z0-9]+$",
+      "title": "Pattern",
+      "type": "string"
     }
   },
   "required": [

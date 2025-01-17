@@ -1,12 +1,13 @@
 from pydantic import BaseModel, Field
 
+
 class StringFormats(BaseModel):
-    email: str = Field(format='email')
-    hostname : str = Field(format='hostname')
-    ip4address: str = Field(format='ipv4')
-    ip6address: str = Field(format='ipv6')
-    uri: str = Field(format='uri')
-    uuid: str = Field(format='uuid')
+    email: str = Field(format="email")
+    hostname: str = Field(format="hostname")
+    ip4address: str = Field(format="ipv4")
+    ip6address: str = Field(format="ipv6")
+    uri: str = Field(format="uri")
+    uuid: str = Field(format="uuid")
 
     @classmethod
     def valid_cases(cls):
@@ -23,7 +24,7 @@ class StringFormats(BaseModel):
 
     @classmethod
     def invalid_cases(cls):
-         return [
+        return [
             {
                 "email": "exampletest.com",
                 "hostname": "exa_mple.com",

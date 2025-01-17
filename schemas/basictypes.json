@@ -1,24 +1,24 @@
 {
   "properties": {
-    "string_field": {
-      "title": "String Field",
-      "type": "string"
-    },
-    "int_field": {
-      "title": "Int Field",
-      "type": "integer"
+    "bool_field": {
+      "title": "Bool Field",
+      "type": "boolean"
     },
     "float_field": {
       "title": "Float Field",
       "type": "number"
     },
-    "bool_field": {
-      "title": "Bool Field",
-      "type": "boolean"
+    "int_field": {
+      "title": "Int Field",
+      "type": "integer"
     },
     "none_field": {
       "title": "None Field",
       "type": "null"
+    },
+    "string_field": {
+      "title": "String Field",
+      "type": "string"
     }
   },
   "required": [

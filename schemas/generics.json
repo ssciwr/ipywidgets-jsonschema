@@ -3,13 +3,13 @@
     "data": {
       "title": "Data"
     },
-    "status": {
-      "title": "Status",
-      "type": "integer"
-    },
     "message": {
       "title": "Message",
       "type": "string"
+    },
+    "status": {
+      "title": "Status",
+      "type": "integer"
     }
   },
   "required": [

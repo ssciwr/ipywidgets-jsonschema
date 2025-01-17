@@ -1,11 +1,11 @@
 {
   "properties": {
-    "name": {
-      "title": "Name",
-      "type": "string"
-    },
     "breed": {
       "title": "Breed",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
       "type": "string"
     }
   },

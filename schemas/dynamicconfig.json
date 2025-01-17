@@ -1,14 +1,14 @@
 {
   "properties": {
+    "metadata": {
+      "title": "Metadata",
+      "type": "object"
+    },
     "raw_json": {
       "contentMediaType": "application/json",
       "contentSchema": {},
       "title": "Raw Json",
       "type": "string"
-    },
-    "metadata": {
-      "title": "Metadata",
-      "type": "object"
     },
     "settings_json": {
       "contentMediaType": "application/json",

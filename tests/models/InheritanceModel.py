@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 
+
 class Animal(BaseModel):
     name: str
+
     @classmethod
     def valid_cases(cls):
         """Provide valid cases for the model."""
@@ -17,12 +19,14 @@ class Animal(BaseModel):
         """Provide default values for the model."""
         return {}
 
+
 class InheritanceModel(Animal):
     breed: str
+
     @classmethod
     def valid_cases(cls):
         """Provide valid cases for the model."""
-        return [{"breed" : "Golden Retriever" , "name": "Bello"}]
+        return [{"breed": "Golden Retriever", "name": "Bello"}]
 
     @classmethod
     def invalid_cases(cls):
@@ -32,4 +36,4 @@ class InheritanceModel(Animal):
     @classmethod
     def default_values(cls):
         """Provide default values for the model."""
-        return {"breed" : "" , "name": ""}
+        return {"breed": "", "name": ""}

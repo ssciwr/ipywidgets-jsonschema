@@ -11,8 +11,11 @@
     }
   },
   "properties": {
-    "user_type": {
-      "$ref": "#/$defs/UserType"
+    "level": {
+      "maximum": 5,
+      "minimum": 1,
+      "title": "Level",
+      "type": "integer"
     },
     "status": {
       "enum": [
@@ -23,11 +26,8 @@
       "title": "Status",
       "type": "string"
     },
-    "level": {
-      "maximum": 5,
-      "minimum": 1,
-      "title": "Level",
-      "type": "integer"
+    "user_type": {
+      "$ref": "#/$defs/UserType"
     }
   },
   "required": [

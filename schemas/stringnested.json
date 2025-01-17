@@ -2,12 +2,12 @@
   "$defs": {
     "Address": {
       "properties": {
-        "street": {
-          "title": "Street",
-          "type": "string"
-        },
         "city": {
           "title": "City",
+          "type": "string"
+        },
+        "street": {
+          "title": "Street",
           "type": "string"
         }
       },
@@ -20,16 +20,16 @@
     }
   },
   "properties": {
-    "name": {
-      "title": "Name",
-      "type": "string"
-    },
     "adresses": {
       "items": {
         "$ref": "#/$defs/Address"
       },
       "title": "Adresses",
       "type": "array"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
     }
   },
   "required": [
