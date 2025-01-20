@@ -14,6 +14,7 @@ import re
 import traitlets
 import collections.abc
 from pydantic import BaseModel
+
 # We are providing some compatibility for ipywidgets v7 and v8
 IS_VERSION_8 = version.parse(ipywidgets.__version__).major == 8
 
@@ -39,7 +40,8 @@ def as_tuple(obj):
         return obj
     else:
         return (obj,)
-    
+
+
 def convert_pydantic_to_schema(model) -> dict:
     """
     Converts a Pydantic model class to its corresponding JSON schema.
