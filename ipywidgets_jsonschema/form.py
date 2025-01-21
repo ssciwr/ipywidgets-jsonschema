@@ -13,6 +13,7 @@ import os
 import re
 import traitlets
 import collections.abc
+from pydantic import BaseModel
 
 # We are providing some compatibility for ipywidgets v7 and v8
 IS_VERSION_8 = version.parse(ipywidgets.__version__).major == 8
@@ -39,6 +40,15 @@ def as_tuple(obj):
         return obj
     else:
         return (obj,)
+
+
+def convert_pydantic_to_schema(model) -> dict:
+    """
+    Converts a Pydantic model class to its corresponding JSON schema.
+    """
+    if isinstance(model, type) and issubclass(model, BaseModel):
+        return model.model_json_schema()
+    return model
 
 
 def minmax_schema_rule(widget, schema):
@@ -115,6 +125,7 @@ class Form:
             A function that is used to sort the keys in a dictionary. Defaults to
             the built-in sorted, but is no-op if sorted raises a TypeError.
         """
+        schema = convert_pydantic_to_schema(schema)
         # Make sure that the given schema is valid
         Draft7Validator.check_schema(schema)
 
