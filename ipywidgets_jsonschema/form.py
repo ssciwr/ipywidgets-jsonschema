@@ -933,10 +933,7 @@ class Form:
 
         def _getter():
             result = [h.getter() for h in elements[:element_size]]
-            if any(
-                key.lower() in {"set", "uniqueitems"} and schema.get(key, False)
-                for key in schema
-            ):
+            if schema.get("uniqueItems", False):
                 result = list(set(result))
             return result
 

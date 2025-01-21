@@ -13,7 +13,6 @@
       "default": "foo",
       "type": "string"
     },
-    "set": true,
     "type": "array",
     "uniqueItems": true
   },
