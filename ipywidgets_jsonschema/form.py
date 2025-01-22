@@ -21,8 +21,8 @@ IS_VERSION_8 = version.parse(ipywidgets.__version__).major == 8
 # JSONSchema standard supports:
 # https://json-schema.org/understanding-json-schema/reference/string#built-in-formats
 SUPPORTED_FORMATS_VERSION_7 = []
-SUPPORTED_FORMATS_VERSION_8 = ["date-time", "time", "date", "email", "idn-email","hostname", "idn-hostname", "ipv4", "ipv6", "uri", "iri", "uuid"]
-
+SUPPORTED_FORMATS_VERSION_8 = ["date-time", "time", "date"]
+STRING_FORMATS = ["email","hostname","ipv4", "ipv6", "uri","uuid"]
 REGEX_DICT = {
     "email": r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$',
     "idn-email": r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$',
@@ -235,7 +235,8 @@ class Form:
         format_ = schema.get("format", None)
         if format_ is not None:
             if (IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_8) or (
-                not IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_7
+                not IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_7) or (
+                    format_ in STRING_FORMATS
             ):
                 if format_ in REGEX_DICT:
                     return self._construct_format(schema, REGEX_DICT[format_], label, root=root)
