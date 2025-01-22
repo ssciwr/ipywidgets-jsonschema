@@ -1,0 +1,29 @@
+{
+  "properties": {
+    "metadata": {
+      "title": "Metadata",
+      "type": "object"
+    },
+    "raw_json": {
+      "contentMediaType": "application/json",
+      "contentSchema": {},
+      "title": "Raw Json",
+      "type": "string"
+    },
+    "settings_json": {
+      "contentMediaType": "application/json",
+      "contentSchema": {
+        "type": "object"
+      },
+      "title": "Settings Json",
+      "type": "string"
+    }
+  },
+  "required": [
+    "raw_json",
+    "metadata",
+    "settings_json"
+  ],
+  "title": "DynamicConfig",
+  "type": "object"
+}

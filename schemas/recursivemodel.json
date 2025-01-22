@@ -1,0 +1,26 @@
+{
+  "$defs": {
+    "RecursiveModel": {
+      "properties": {
+        "children": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/RecursiveModel"
+          },
+          "title": "Children",
+          "type": "array"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "title": "RecursiveModel",
+      "type": "object"
+    }
+  },
+  "$ref": "#/$defs/RecursiveModel"
+}

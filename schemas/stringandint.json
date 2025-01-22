@@ -1,0 +1,18 @@
+{
+  "properties": {
+    "age": {
+      "title": "Age",
+      "type": "integer"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "age"
+  ],
+  "title": "StringAndInt",
+  "type": "object"
+}

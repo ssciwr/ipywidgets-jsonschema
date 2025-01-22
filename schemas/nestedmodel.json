@@ -1,0 +1,67 @@
+{
+  "$defs": {
+    "Address": {
+      "properties": {
+        "city": {
+          "title": "City",
+          "type": "string"
+        },
+        "country": {
+          "title": "Country",
+          "type": "string"
+        },
+        "postal_code": {
+          "pattern": "^\\d{5}$",
+          "title": "Postal Code",
+          "type": "string"
+        },
+        "street": {
+          "title": "Street",
+          "type": "string"
+        }
+      },
+      "required": [
+        "street",
+        "city",
+        "country",
+        "postal_code"
+      ],
+      "title": "Address",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "addresses": {
+      "items": {
+        "$ref": "#/$defs/Address"
+      },
+      "title": "Addresses",
+      "type": "array"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "metadata": {
+      "title": "Metadata",
+      "type": "object"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "primary_address": {
+      "$ref": "#/$defs/Address"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "addresses",
+    "primary_address",
+    "metadata"
+  ],
+  "title": "NestedModel",
+  "type": "object"
+}

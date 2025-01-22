@@ -1,0 +1,14 @@
+{
+  "properties": {
+    "name": {
+      "description": "some text",
+      "title": "Product Name",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "title": "StringWithAnnotations",
+  "type": "object"
+}

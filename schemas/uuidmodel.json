@@ -1,0 +1,14 @@
+{
+  "properties": {
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id"
+  ],
+  "title": "UUIDModel",
+  "type": "object"
+}

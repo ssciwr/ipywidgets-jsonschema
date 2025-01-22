@@ -1,0 +1,20 @@
+{
+  "properties": {
+    "price": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Price"
+    }
+  },
+  "required": [
+    "price"
+  ],
+  "title": "UnionIntFloat",
+  "type": "object"
+}

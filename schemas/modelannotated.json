@@ -1,0 +1,13 @@
+{
+  "properties": {
+    "username": {
+      "title": "Username",
+      "type": "string"
+    }
+  },
+  "required": [
+    "username"
+  ],
+  "title": "Modelannotated",
+  "type": "object"
+}
