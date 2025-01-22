@@ -31,7 +31,7 @@ def test_form_with_descriptions(testcase):
 
 
 def test_add_observer(testcase):
-    # Try adding an observerls
+    # Try adding an observer
     form = Form(testcase["schema"])
     form.observe(print, names=("value", "selected_index"), type="change")
 
