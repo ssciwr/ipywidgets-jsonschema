@@ -13,6 +13,7 @@ import os
 import re
 import traitlets
 import collections.abc
+from pydantic import BaseModel
 
 # We are providing some compatibility for ipywidgets v7 and v8
 IS_VERSION_8 = version.parse(ipywidgets.__version__).major == 8
@@ -46,6 +47,15 @@ def as_tuple(obj):
         return obj
     else:
         return (obj,)
+
+
+def convert_pydantic_to_schema(model) -> dict:
+    """
+    Converts a Pydantic model class to its corresponding JSON schema.
+    """
+    if isinstance(model, type) and issubclass(model, BaseModel):
+        return model.model_json_schema()
+    return model
 
 
 def minmax_schema_rule(widget, schema):
@@ -122,6 +132,7 @@ class Form:
             A function that is used to sort the keys in a dictionary. Defaults to
             the built-in sorted, but is no-op if sorted raises a TypeError.
         """
+        schema = convert_pydantic_to_schema(schema)
         # Make sure that the given schema is valid
         Draft7Validator.check_schema(schema)
 
@@ -449,6 +460,25 @@ class Form:
         def _register_observer(h, n, t):
             widget.observe(h, names=n, type=t)
 
+        warning_label = ipywidgets.Label(
+            "", layout=ipywidgets.Layout(color="red", display="none")
+        )
+
+        def _observer(change):
+            if not pattern_checker(widget.value):
+                pattern = schema.get("pattern", ".*")
+                warning_label.value = (
+                    f"Warning: Input does not match the specified pattern"
+                )
+                warning_label.layout.display = "block"
+                change.owner.layout.border = "2px solid red"
+            else:
+                change.owner.layout.border = "none"
+                warning_label.value = ""
+                warning_label.layout.display = "none"
+
+        widget.observe(_observer, names="value", type="change")
+
         def _setter(_d):
             if pattern_checker(_d):
                 widget.value = _d
@@ -519,7 +549,7 @@ class Form:
             getter=_getter,
             setter=_setter,
             resetter=_resetter,
-            widgets=[box],
+            widgets=[box, warning_label],
             register_observer=_register_observer,
         )
 
@@ -967,12 +997,18 @@ class Form:
         # Initially call the resetter
         _resetter()
 
+        def _getter():
+            result = [h.getter() for h in elements[:element_size]]
+            if schema.get("uniqueItems", False):
+                result = list(set(result))
+            return result
+
         wrapped_vbox[0] = self._wrap_description(
             wrapped_vbox[0], schema.get("description", None)
         )
 
         return self.construct_element(
-            getter=lambda: [h.getter() for h in elements[:element_size]],
+            getter=_getter,
             setter=_setter,
             resetter=_resetter,
             widgets=wrapped_vbox,
