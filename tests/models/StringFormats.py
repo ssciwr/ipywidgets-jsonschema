@@ -33,14 +33,3 @@ class StringFormats(BaseModel):
                 "uuid": "550e8400-e29b-41d4-a716-446655440000XXXXXX",
             }
         ]
-
-    @classmethod
-    def default_values(cls):
-        return {
-            "email": "",
-            "hostname": "",
-            "ip4address": "",
-            "ip6address": "",
-            "uri": "",
-            "uuid": "",
-        }
