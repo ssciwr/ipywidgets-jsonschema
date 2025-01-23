@@ -289,27 +289,65 @@ class Form:
         if "properties" in schema:
             for prop, subschema in schema["properties"].items():
                 elements[prop] = self._construct(subschema, label=prop)
+        elif "additionalProperties" in schema:
+            # Handle dictionaries with dynamically defined keys and values
+            elements["dict_container"] = self._construct_dict(
+                schema, label=label
+            )  # call the new function for dict
 
-            # Add conditional elements
-            def add_conditional_elements(s):
-                # Check whether we have an if statement
-                cond = s.get("if", None)
-                if cond is None:
-                    return
+            widget_list = elements[
+                "dict_container"
+            ].widgets  # get dict_container widgets
+            # Maybe wrap this in an Accordion widget
+            wrapped_widget_list = widget_list
+            if not root and label is not None:
+                wrapped_widget_list = self._wrap_accordion(
+                    widget_list, schema, label=label
+                )
 
-                for cprop, csubschema in (
-                    s.get("then", {}).get("properties", {}).items()
-                ):
-                    celem = self._construct(csubschema, label=cprop)
-                    conditionals.append((cond, cprop, celem))
-                    elements[cprop] = celem
+            def _getter():
+                return elements["dict_container"].getter()
 
-                if "else" in s:
-                    add_conditional_elements(s["else"])
+            def _setter(_d):
+                elements["dict_container"].setter(_d)
 
-            add_conditional_elements(schema)
+            def _register_observer(h, n, t):
+                elements["dict_container"].register_observer(h, n, t)
 
-            # Apply sorting to the keys
+            def _resetter():
+                elements["dict_container"].resetter()
+
+            return self.construct_element(
+                getter=_getter,
+                setter=_setter,
+                resetter=_resetter,
+                widgets=wrapped_widget_list,
+                subelements=elements,
+                register_observer=_register_observer,
+            )
+
+        else:
+            widget_list = []
+
+        # Handle the conditionals
+        def add_conditional_elements(s):
+            # Check whether we have an if statement
+            cond = s.get("if", None)
+            if cond is None:
+                return
+
+            for cprop, csubschema in s.get("then", {}).get("properties", {}).items():
+                celem = self._construct(csubschema, label=cprop)
+                conditionals.append((cond, cprop, celem))
+                elements[cprop] = celem
+
+            if "else" in s:
+                add_conditional_elements(s["else"])
+
+        add_conditional_elements(schema)
+
+        # Apply sorting to the keys
+        if "properties" in schema:
             keys = schema["properties"].keys()
             try:
                 keys = self.sorter(keys)
@@ -330,7 +368,11 @@ class Form:
 
         # Maybe wrap this in an Accordion widget
         wrapped_widget_list = widget_list
-        if not root and len(schema.get("properties", {})) > 1:
+        if (
+            not root
+            and len(schema.get("properties", {})) > 1
+            and not "additionalProperties" in schema
+        ):
             wrapped_widget_list = self._wrap_accordion(widget_list, schema, label=label)
 
         def _getter():
@@ -364,11 +406,15 @@ class Form:
             if "properties" in schema:
                 for e in elements.values():
                     e.register_observer(h, n, t)
+            elif "additionalProperties" in schema:
+                elements["dict_container"].register_observer(h, n, t)
 
         def _resetter():
             if "properties" in schema:
                 for e in elements.values():
                     e.resetter()
+            elif "additionalProperties" in schema:
+                elements["dict_container"].resetter()
 
         # Add the conditional information
         if "properties" in schema:
@@ -414,6 +460,121 @@ class Form:
             resetter=_resetter,
             widgets=wrapped_widget_list,
             subelements=elements,
+            register_observer=_register_observer,
+        )
+
+    def _construct_dict(self, schema, label=None):
+        if "additionalProperties" not in schema:
+            raise FormError(
+                f"Expecting 'additionalProperties' key in schema for type dict: {schema}"
+            )
+
+        additional_props_schema = schema["additionalProperties"]
+
+        # container for the input widgets
+
+        widget = ipywidgets.VBox([])
+
+        elements = []  # list of widgets corresponding to each key
+
+        def _update_widget():
+            widget.children = [ipywidgets.VBox(e.widgets) for e in elements]
+
+        def add_dict_entry(key=None, value=None):
+            if key is None or key == "":
+                key = "key" + str(len(elements))
+
+            key_widget = ipywidgets.Text(value=key, description="key")
+
+            elem_dict = self._construct(additional_props_schema)
+
+            trash = ipywidgets.Button(icon="trash")
+
+            def remove_entry(_):
+                # Identify the current list index of the entry
+                for index, child in enumerate(widget.children):
+                    if trash in child.children:
+                        break
+
+                elements.pop(index)
+
+                # Remove it from the widget list and the handler list
+                _update_widget()
+
+            trash.on_click(remove_entry)
+
+            def _dict_getter():
+                return {key_widget.value: elem_dict.getter()}
+
+            def _dict_setter(_dict):
+
+                if key_widget.value in _dict:
+                    elem_dict.setter(_dict[key_widget.value])
+                else:
+                    elem_dict.resetter()
+
+            elements.append(
+                self.construct_element(
+                    getter=_dict_getter,
+                    setter=_dict_setter,
+                    resetter=elem_dict.resetter,
+                    widgets=[
+                        ipywidgets.HBox(
+                            [key_widget, ipywidgets.VBox(elem_dict.widgets), trash]
+                        )
+                    ],
+                )
+            )
+            _update_widget()
+
+        add_btn = ipywidgets.Button(
+            description="Add key value",
+            icon="plus",
+            layout=ipywidgets.Layout(width="100%"),
+        )
+        add_btn.on_click(lambda x: add_dict_entry())
+
+        widget_list = [widget, add_btn]
+
+        def _getter():
+
+            data = {}
+            for e in elements:
+                data.update(e.getter())
+
+            return data
+
+        def _setter(_d):
+
+            for e in elements:
+                key = list(e.getter().keys())[0]
+                if key in _d:
+                    e.setter(_d)
+                else:
+                    e.resetter()
+
+            # check for keys that need to added
+            keys = [list(e.getter().keys())[0] for e in elements]
+            for key, value in _d.items():
+
+                if key not in keys:
+                    add_dict_entry(key=key, value=value)
+
+        def _register_observer(h, n, t):
+            for e in elements:
+                e.register_observer(h, n, t)
+
+        def _resetter():
+            if "default" in schema:
+                _setter(schema["default"])
+
+        _resetter()
+
+        return self.construct_element(
+            getter=_getter,
+            setter=_setter,
+            resetter=_resetter,
+            widgets=widget_list,
             register_observer=_register_observer,
         )
 
