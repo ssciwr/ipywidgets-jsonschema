@@ -13,7 +13,7 @@ class DictionaryModel(BaseModel):
     @classmethod
     def invalid_cases(cls):
         """Provide invalid cases for the model."""
-        return [{"name": "Test", "settings": {}}, {"name": "Test"}]
+        return [{"name": "Test", "settings": {"key1": "string"}}, {"name": "Test"}]
 
     @classmethod
     def default_values(cls):
