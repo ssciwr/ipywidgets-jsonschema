@@ -947,7 +947,10 @@ class Form:
 
         # Trigger whenever the resulting widget needs update
         def update_widget():
-            subwidgets = sum((e.widgets for e in elements[:element_size]), [])
+            subwidgets = []
+            for e in elements[:element_size]:
+                if e.widgets:
+                    subwidgets.extend(e.widgets)
             if not fixed_length:
                 subwidgets.append(button)
             vbox.children = subwidgets
@@ -1006,8 +1009,8 @@ class Form:
                             return
 
                     # Identify the current list index of the entry
-                    for index, child in enumerate(vbox.children[:-1]):
-                        if b in child.children[1].children:
+                    for index, child in enumerate(vbox.children):
+                        if child.children and b in child.children[1].children:
                             break
 
                     # Move the corresponding element to the back of the list
@@ -1025,9 +1028,9 @@ class Form:
 
                 def move(dir):
                     def _move(b):
-                        items = list(vbox.children[:-1])
+                        items = list(vbox.children)
                         for i, it in enumerate(items):
-                            if b in it.children[1].children:
+                            if it.children and b in it.children[1].children:
                                 newi = min(max(i + dir, 0), len(items) - 1)
                                 items[i], items[newi] = items[newi], items[i]
                                 elements[i], elements[newi] = (
@@ -1044,11 +1047,10 @@ class Form:
                 up.on_click(move(-1))
                 down.on_click(move(1))
 
+                array_entry_widget = ipywidgets.VBox()
                 children = []
-                if recelem.widgets and recelem.widgets[0].children:
-                    children = [
-                        recelem.widgets[0].children[0],
-                    ]
+                if recelem.widgets:
+                    children.append(ipywidgets.VBox(recelem.widgets))
                 if not fixed_length:
                     children.append(
                         ipywidgets.HBox(
@@ -1056,7 +1058,7 @@ class Form:
                         )
                     )
 
-                array_entry_widget = ipywidgets.VBox(children)
+                array_entry_widget.children = children
 
                 # Modify recelem to our needs
                 elemdict = recelem._asdict()
