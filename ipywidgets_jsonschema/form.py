@@ -219,8 +219,10 @@ class Form:
         self._form_element.setter(_data)
 
     def _construct(self, schema, label=None, root=False):
-        if schema in self._construction_stack and not ("$ref" in schema or "enum" in schema):
-                return self.construct_element()
+        if schema in self._construction_stack and not (
+            "$ref" in schema or "enum" in schema
+        ):
+            return self.construct_element()
         self._construction_stack.append(schema)
 
         # Enumerations are handled a dropdowns
