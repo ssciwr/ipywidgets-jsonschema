@@ -1,0 +1,41 @@
+{
+    "schema": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "settings": {
+          "additionalProperties": true,
+          "minProperties": 1,
+          "title": "Settings",
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "settings"
+      ],
+      "title": "DictMinProperties",
+      "type": "object"
+    },
+    "valid": [
+      {
+          "name": "Test",
+          "settings": {"key1": 1}
+      },
+       {
+        "name": "Test",
+        "settings": {"key1": 1, "key2": "value", "key3": [1,2,3]}
+      },
+      {
+          "name": "Test",
+          "settings": {"key1": null}
+      },
+        {
+          "name": "Test2",
+          "settings": {"key1": "test"}
+      }
+  
+    ]
+  }
