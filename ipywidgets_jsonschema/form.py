@@ -23,6 +23,15 @@ IS_VERSION_8 = version.parse(ipywidgets.__version__).major == 8
 # https://json-schema.org/understanding-json-schema/reference/string#built-in-formats
 SUPPORTED_FORMATS_VERSION_7 = []
 SUPPORTED_FORMATS_VERSION_8 = ["date-time", "time", "date"]
+STRING_FORMATS = ["email", "hostname", "ipv4", "ipv6", "uri", "uuid"]
+REGEX_DICT = {
+    "email": r"^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$",
+    "hostname": r"^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$",
+    "ipv4": r"^\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}$",
+    "ipv6": r"(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))",
+    "uri": r"^(?:[a-zA-Z][a-zA-Z0-9+.-]*):(?://(?:[a-zA-Z0-9\-._~%!$&\'()*+,;=]+@)?(?:\[[^\]]+\]|[a-zA-Z0-9\-._~%]+)(?::\d+)?)?(?:/[a-zA-Z0-9\-._~%!$&\'()*+,;=:@]*)*(?:\?[a-zA-Z0-9\-._~%!$&\'()*+,;=:@/?]*)?(?:#[a-zA-Z0-9\-._~%!$&\'()*+,;=:@/?]*)?$",
+    "uuid": r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$",
+}
 
 
 class FormError(Exception):
@@ -244,9 +253,15 @@ class Form:
         # Maybe this is using a built-in format
         format_ = schema.get("format", None)
         if format_ is not None:
-            if (IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_8) or (
-                not IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_7
+            if (
+                (IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_8)
+                or (not IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_7)
+                or (format_ in STRING_FORMATS)
             ):
+                if format_ in REGEX_DICT:
+                    return self._construct_format(
+                        schema, REGEX_DICT[format_], label, root=root
+                    )
                 type_ = format_.replace("-", "_")
 
         result = getattr(self, f"_construct_{type_}")(schema, label=label, root=root)
@@ -496,10 +511,22 @@ class Form:
             if pattern_checker(_d):
                 widget.value = _d
             else:
-                # We will have to see whether or not throwing is a good idea here
-                raise FormError(
-                    f"Value '{_d}' does not match the specified pattern '{schema['pattern']}'"
-                )
+                # Check if its a valid format
+                format_ = schema.get("format", None)
+                if format_ is not None:
+                    if format_ in REGEX_DICT:
+                        raise FormError(
+                            f"Value '{widget.value}' does not match the specified format '{schema['format']}'"
+                        )
+                    else:
+                        raise FormError(
+                            f"'{schema['format']}' is not a supported format."
+                        )
+                else:
+                    # We will have to see whether or not throwing is a good idea here
+                    raise FormError(
+                        f"Value '{_d}' does not match the specified pattern '{schema['pattern']}'"
+                    )
 
         def _resetter():
             # Apply a potential default
@@ -514,10 +541,21 @@ class Form:
 
         def _getter():
             if not pattern_checker(widget.value):
-                # We will have to see whether or not throwing is a good idea here
-                raise FormError(
-                    f"Value '{widget.value}' does not match the specified pattern '{schema['pattern']}'"
-                )
+                format_ = schema.get("format", None)
+                if format_ is not None:
+                    if format_ in REGEX_DICT:
+                        raise FormError(
+                            f"Value '{widget.value}' does not match the specified format'{schema['format']}'"
+                        )
+                    else:
+                        raise FormError(
+                            f"'{schema['format']}' is not a supported format."
+                        )
+                else:
+                    # We will have to see whether or not throwing is a good idea here
+                    raise FormError(
+                        f"Value '{widget.value}' does not match the specified pattern '{schema['pattern']}'"
+                    )
 
             return widget.value
 
@@ -731,6 +769,10 @@ class Form:
             widgets=[box],
             register_observer=_register_observer,
         )
+
+    def _construct_format(self, schema, regex=None, label=None, root=False):
+        schema["pattern"] = regex
+        return self._construct_simple(schema, ipywidgets.Text(), label=label, root=root)
 
     def _construct_number(self, schema, label=None, root=False):
         kwargs = dict()
