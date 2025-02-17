@@ -20,7 +20,7 @@ sys.path.insert(
 )  # Add the project's root directory to the path
 
 project = "ipywidgets-jsonschema"
-copyright = "2025, Suraj Desai and Mangkong Virasith"
+copyright = "2025, Suraj Desai and Mangkonthong Virasith"
 version = "0.1.0"
 release = "0.1.0"
 
@@ -35,6 +35,7 @@ extensions = [
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
+    "nbsphinx",
 ]
 
 html_theme = "sphinx_rtd_theme"  # Set the theme
