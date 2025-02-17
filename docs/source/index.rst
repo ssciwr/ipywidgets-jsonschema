@@ -11,6 +11,26 @@ documentation for details.
    :caption: Contents:
 
    modules
+.. toctree::
+   :maxdepth: 2
+   :caption: Getting started:
+
+   installation
+   ../notebooks/usage
+   ../notebooks/formfieldtypes
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Class reference:
+
+   api/modules
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contributing:
+
+   contributing
+
 
 Indices and tables
 ==================

@@ -14,10 +14,9 @@
 
 import os
 import sys
+from pathlib import Path
 
-sys.path.insert(
-    0, os.path.abspath("..")
-)  # Add the project's root directory to the path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "ipywidgets_jsonschema"))
 
 project = "ipywidgets-jsonschema"
 copyright = "2025, Suraj Desai and Mangkonthong Virasith"
@@ -39,4 +38,12 @@ extensions = [
 ]
 
 html_theme = "sphinx_rtd_theme"  # Set the theme
+html_theme_options = {
+    # Toc options
+    'collapse_navigation': True,
+    'sticky_navigation': True,
+    'navigation_depth': 4,
+    'includehidden': True,
+    'titles_only': False
+}
 language = "English"
