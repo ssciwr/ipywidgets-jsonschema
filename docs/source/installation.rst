@@ -8,14 +8,6 @@ Before installing `ipywidgets-jsonschema`, ensure you have the following softwar
     * pydantic
     * ipywidgets
 
-Alternatively, the requirements can be installed with:
-
-.. code-block:: bash
-
-    python -m pip install -r requirements.txt
-
-
-
 Install with `pip`
 ------------------
 
@@ -32,3 +24,13 @@ Alternatively, you can get it from conda-forge:
 .. code-block:: bash
 
     conda install -c conda-forge ipywidgets-jsonschema
+
+Install from source
+----------------------
+If you want the latest development version, you can install from Github:
+
+.. code-block:: bashx^
+
+    git clone https://github.com/ssciwr/ipywidgets-jsonschema.git
+    cd ipywidgets-jsonschema
+    pip install .

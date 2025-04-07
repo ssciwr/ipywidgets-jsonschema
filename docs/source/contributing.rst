@@ -1,2 +1,10 @@
-How to contribute
-=================
+Development - Getting started
+=============================
+
+
+Limitations
+-----------
+
+.. tip::
+
+        Placeholder

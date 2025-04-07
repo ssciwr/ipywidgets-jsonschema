@@ -16,8 +16,8 @@ documentation for details.
    :caption: Getting started:
 
    installation
-   ../notebooks/usage
-   ../notebooks/formfieldtypes
+   usage
+   detailed
 
 .. toctree::
    :maxdepth: 2
@@ -27,9 +27,10 @@ documentation for details.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contributing:
+   :caption: For Developers:
 
    contributing
+   testing
 
 
 Indices and tables

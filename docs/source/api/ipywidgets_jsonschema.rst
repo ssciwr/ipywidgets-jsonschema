@@ -3,8 +3,6 @@
 ipywidgets\_jsonschema package
 ==============================
 
-Submodules
-----------
 
 ipywidgets\_jsonschema.form module
 ----------------------------------
