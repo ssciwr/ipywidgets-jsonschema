@@ -29,7 +29,7 @@ Install from source
 ----------------------
 If you want the latest development version, you can install from Github:
 
-.. code-block:: bashx^
+.. code-block:: bash
 
     git clone https://github.com/ssciwr/ipywidgets-jsonschema.git
     cd ipywidgets-jsonschema

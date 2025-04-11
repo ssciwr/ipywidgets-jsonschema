@@ -29,7 +29,8 @@ documentation for details.
    :maxdepth: 2
    :caption: For Developers:
 
-   contributing
+   developing
+   code-quality
    testing
 
 
