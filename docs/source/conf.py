@@ -25,16 +25,17 @@ version = "0.1.0"
 release = "0.1.0"
 
 extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon",  # Support Google-style docstrings
-    "sphinx.ext.doctest",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.todo",
-    "sphinx.ext.coverage",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.ifconfig",
-    "sphinx.ext.viewcode",
-    "sphinx.ext.githubpages",
+    'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
+    'sphinx.ext.coverage',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.ifconfig',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.githubpages',
+    'nbsphinx', # Add nbsphinx
 ]
 
 html_theme = "sphinx_rtd_theme"  # Set the theme
