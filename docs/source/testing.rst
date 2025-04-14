@@ -4,14 +4,14 @@ This section outlines the testing setup and how to extend or contribute to the t
 
 Test Suite Overview
 -------------------
-The project utilizes the `pytest` framework for testing. All test cases are located in the `tests` directory at the root
+The project utilizes the ``pytest`` framework for testing. All test cases are located in the ``tests/`` directory at the root
 of the repository.
 
 Running Tests
 -------------
 To execute the test suite:
 
-Make sure you have `pytest` installed.
+Make sure you have ``pytest`` installed.
 
 .. code-block:: bash
 
@@ -23,7 +23,7 @@ Make sure you have `pytest` installed.
 
     pytest
 
-This command will discover and execute all tests in the `tests/` directory.
+This command will discover and execute all tests in the ``tests/`` directory.
 
 
 
@@ -32,16 +32,16 @@ Testing setup
 -------------
 Tests are automatically created using:
 
-- `.json` schema files from the `tests/schemas` directory
-- `pydantic` models from the `tests/models` directory
+- ``.json`` schema files from the `tests/schemas` directory
+- ``pydantic`` models from the `tests/models` directory
 
 
-The test framework uses a custom `conftest.py` file that loads all schemas and models, and passes them into test functions via `pytest_generate_tests`.
+The test framework uses a custom ``conftest.py`` file that loads all schemas and models, and passes them into test functions via ``pytest_generate_tests``.
 
 How it works
 ------------
-In `conftest.py`, the hook pytest_generate_tests(metafunc) inspects the arguments of each test function.
-If a test function uses either "testcase" or "model" as a parameter, pytest will inject multiple values into that function using @pytest.mark.parametrize.
+In ``conftest.py``, the hook ``pytest_generate_tests(metafunc)`` inspects the arguments of each test function.
+If a test function uses either ``testcase`` or ``model`` as a parameter, pytest will inject multiple values into that function using ``@pytest.mark.parametrize``.
 
 .. code-block:: python
 
@@ -57,19 +57,19 @@ Each test is labeled using its corresponding filename or class name via the `ids
 
 Fixtures provided
 -----------------
-- `testcase`: a schema and test cases with `default`, `valid` and `invalid` documents
-- `model`: `pydantic` model class with `valid_cases()` and `invalid_cases()` methods.
+- ``testcase``: a schema and test cases with ``default``, ``valid`` and ``invalid`` documents
+- ``model``: ``pydantic`` model class with ``valid_cases()`` and ``invalid_cases()`` methods.
 
 
 
 
 
-All tests live in `test_form.py`. There are two main types:
+All tests live in ``test_form.py``. There are two main types:
 
 Schema-based tests
 ------------------
 
-These use schemas defined in `schemas/*.json`. Each schema can define:
+These use schemas defined in ``schemas/*.json``. Each schema can define:
 
 - A **default** document to compare with generated form data
 - A list of **valid** documents that must pass validation
@@ -124,7 +124,7 @@ These are used to verify that:
 Summary
 -------
 To add a new test case:
-- Create a new .json file in schemas/
-- Or define a new model in models/ and add .valid_cases() / .invalid_cases()
+- Create a new .json file in ``schemas/``
+- Or define a new model in ``models/`` and add ``.valid_cases()`` and ``.invalid_cases()``
 
 There’s no need to write custom test functions manually. Just add schemas and models, and they’ll be picked up automatically.

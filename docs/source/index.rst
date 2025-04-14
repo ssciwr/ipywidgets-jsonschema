@@ -32,6 +32,7 @@ documentation for details.
    developing
    code-quality
    testing
+   issues
 
 
 Indices and tables

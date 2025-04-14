@@ -1,7 +1,7 @@
 Development - Getting started
 =============================
 
-This page explains how to set up the development environment for working on ipywidgets-jsonschema. The goal is to make editing, testing, and experimenting as fast and frictionless as possible — with live-reloading and zero manual reinstalls.
+This page explains how to set up the development environment for working on ``ipywidgets-jsonschema``. The goal is to make editing, testing, and experimenting as fast and frictionless as possible — with live-reloading and zero manual reinstalls.
 
 
 
@@ -44,9 +44,4 @@ When developing and testing inside a Jupyter notebook, enable autoreload so code
         %autoreload 2
 
 You only need to run this once per notebook session. 
-Now you can edit files like ipywidgets_jsonschema/form.py, and the updated code will take effect on the next cell execution.
-
-
-.. tip::
-
-        Placeholder
+Now you can edit files like ``ipywidgets_jsonschema/form.py``, and the updated code will take effect on the next cell execution.
