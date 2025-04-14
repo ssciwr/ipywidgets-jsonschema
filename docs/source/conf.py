@@ -14,29 +14,36 @@
 
 import os
 import sys
+from pathlib import Path
 
-sys.path.insert(
-    0, os.path.abspath("..")
-)  # Add the project's root directory to the path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "ipywidgets_jsonschema"))
 
 project = "ipywidgets-jsonschema"
-copyright = "2025, Suraj Desai and Mangkong Virasith"
+copyright = "2025, Suraj Desai and Mangkonthong Virasith"
 version = "0.1.0"
 release = "0.1.0"
 
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
-    'nbsphinx', # Add nbsphinx
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",  # Support Google-style docstrings
+    "sphinx.ext.doctest",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.todo",
+    "sphinx.ext.coverage",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.ifconfig",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.githubpages",
+    "nbsphinx",
 ]
 
 html_theme = "sphinx_rtd_theme"  # Set the theme
+html_theme_options = {
+    # Toc options
+    'collapse_navigation': True,
+    'sticky_navigation': True,
+    'navigation_depth': 4,
+    'includehidden': True,
+    'titles_only': False
+}
 language = "English"

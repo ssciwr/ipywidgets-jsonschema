@@ -1,21 +1,36 @@
-.. _installation:
-
 Installation
 ============
 
-To install `ipywidgets-jsonschema`, you can use pip:
+Prerequisites
+-------------
+Before installing `ipywidgets-jsonschema`, ensure you have the following software installed:
+
+    * pydantic
+    * ipywidgets
+
+Install with `pip`
+------------------
+
+To install the package, use:
 
 .. code-block:: bash
 
-   pip install ipywidgets-jsonschema
+    python -m pip install ipywidgets-jsonschema
 
-**Dependencies**
+Install with `conda`
+--------------------
+Alternatively, you can get it from conda-forge:
 
-`ipywidgets-jsonschema` depends on the following packages:
+.. code-block:: bash
 
-*   `ipywidgets`
-*   `jsonschema`
-*   `pydantic`
-*   `packaging`
+    conda install -c conda-forge ipywidgets-jsonschema
 
-These dependencies will be installed automatically when you install `ipywidgets-jsonschema`.
+Install from source
+----------------------
+If you want the latest development version, you can install from Github:
+
+.. code-block:: bash
+
+    git clone https://github.com/ssciwr/ipywidgets-jsonschema.git
+    cd ipywidgets-jsonschema
+    pip install .

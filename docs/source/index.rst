@@ -23,16 +23,30 @@ ipywidgets-jsonschema Documentation
    :maxdepth: 1
    :caption: Table of Contents:
 
+   modules
+.. toctree::
+   :maxdepth: 2
+   :caption: Getting started:
+
    installation
-   how-to/index
-   examples/index
-   api
-   contributing
+   usage
+   detailed
 
-Funding Acknowledgements
-------------------------
+.. toctree::
+   :maxdepth: 2
+   :caption: Class reference:
 
-If your research uses `ipywidgets-jsonschema`, please acknowledge it by citing the library.
+   api/modules
+
+.. toctree::
+   :maxdepth: 2
+   :caption: For Developers:
+
+   developing
+   code-quality
+   testing
+   issues
+
 
 Indices and tables
 ==================
