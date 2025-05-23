@@ -6,8 +6,8 @@ Examples
 This section provides interactive examples of `ipywidgets-jsonschema` in action.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Examples:
 
-   basic_form.ipynb
-   pydantic_form.ipynb
+   Basic Form           <basic_form>
+   Pydantic Form        <pydantic_form>

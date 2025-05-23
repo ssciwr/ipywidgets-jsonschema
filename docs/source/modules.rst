@@ -1,3 +1,0 @@
-ipywidgets-jsonschema
-=====================
-
