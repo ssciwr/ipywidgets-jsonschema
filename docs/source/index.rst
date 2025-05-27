@@ -30,6 +30,7 @@ documentation for details.
    :caption: For Developers:
 
    developing
+   architecture
    code-quality
    testing
    issues

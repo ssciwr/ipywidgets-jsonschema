@@ -1,7 +1,7 @@
 Development - Getting started
 =============================
 
-This page explains how to set up the development environment for working on ``ipywidgets-jsonschema``. The goal is to make editing, testing, and experimenting as fast and frictionless as possible — with live-reloading and zero manual reinstalls.
+This page explains how to set up the development environment for working on ``ipywidgets-jsonschema``. The goal is to make editing, testing, and experimenting as fast and frictionless as possible.
 
 
 
@@ -23,7 +23,7 @@ Setup instructions
         python -m venv .venv
         source .venv/bin/activate
 
-4. Install the package in Editable model
+4. Install the package in Editable mode
 
 To avoid reinstalling the package every time you make changes:
 

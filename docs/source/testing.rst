@@ -124,7 +124,8 @@ These are used to verify that:
 Summary
 -------
 To add a new test case:
+
 - Create a new .json file in ``schemas/``
-- Or define a new model in ``models/`` and add ``.valid_cases()`` and ``.invalid_cases()``
+- Or define a new pydantic model in ``models/`` and add ``.valid_cases()`` and ``.invalid_cases()``
 
 There’s no need to write custom test functions manually. Just add schemas and models, and they’ll be picked up automatically.

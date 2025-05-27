@@ -44,7 +44,7 @@ We use the ``black-jupyter`` hook, which supports both ``.py`` and code cells in
 - Validation of ``YAML`` and ``JSON`` files.
 
 
-Notebook
+Jupyter
 --------
 We include automatic cleanup and formatting for Jupyter notebooks:
 

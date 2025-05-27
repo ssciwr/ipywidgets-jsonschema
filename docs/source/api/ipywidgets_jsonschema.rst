@@ -1,6 +1,4 @@
 .. _class-reference:
-
-ipywidgets\_jsonschema package
 ==============================
 
 .. automodule:: ipywidgets_jsonschema.form
