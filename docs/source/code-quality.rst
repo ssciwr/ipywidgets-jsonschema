@@ -1,6 +1,14 @@
 
 Code Style & Formatting
 =======================
+
+.. image:: https://img.shields.io/badge/linting-passing-brightgreen
+   :alt: linting status
+
+- **PEP8**: https://www.python.org/dev/peps/pep-0008/
+- **Black**: https://black.readthedocs.io/
+- **isort**: https://pycqa.github.io/isort/
+
 This project enforces consistent code style using pre-commit hooks and the ``Black`` code formatter.
 The goal is to keep the codebase clean, readable and consistent.
 

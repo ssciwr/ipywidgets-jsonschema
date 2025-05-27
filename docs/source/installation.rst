@@ -1,6 +1,9 @@
 Installation
 ============
 
+.. image:: https://img.shields.io/badge/python-3.7%2B-blue
+    :alt: Python 3.7+ compatibility badge
+
 Prerequisites
 -------------
 Before installing `ipywidgets-jsonschema`, ensure you have the following software installed:

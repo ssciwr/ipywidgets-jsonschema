@@ -25,6 +25,7 @@ release = "0.1.0"
 
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",  # Support Google-style docstrings
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
@@ -37,7 +38,12 @@ extensions = [
     "nbsphinx",
 ]
 
+autosummary_generate = True
+nbsphinx_allow_errors = True  # continue build even if notebook errors
+
 html_theme = "sphinx_rtd_theme"  # Set the theme
+html_static_path = ['_static']
+templates_path = ['_templates']
 html_theme_options = {
     # Toc options
     'collapse_navigation': True,
