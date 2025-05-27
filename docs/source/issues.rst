@@ -3,10 +3,6 @@ Limitations and known issues
 There are some known limitations both due to the current implementation and the design of ``JSON Schema`` itself.
 
 
-Incomplete JSON schema coverage
--------------------------------
-
-
 Custom Validation not supported
 -------------------------------
 Custom validators (``@validator``, ``@field_validator``) in Pydantic models have no effect on the generated form.
