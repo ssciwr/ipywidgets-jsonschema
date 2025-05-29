@@ -39,6 +39,7 @@ ipywidgets-jsonschema Documentation
    Testing <testing>
    Code Quality <code-quality>
    Contributing <contributing>
+   Architecture <architecture>
    Issues <issues>
    Changelog <changelog>
 
