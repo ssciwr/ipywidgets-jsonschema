@@ -1,4 +1,4 @@
-# ipywidgets-jsonschema - A widget generator for your Jupyter notebooks
+# ipywidgets-jsonschema
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ssciwr/ipywidgets-jsonschema/ci.yml?branch=main)](https://github.com/ssciwr/ipywidgets-jsonschema/actions/workflows/ci.yml)
@@ -6,30 +6,24 @@
 [![Conda Version](https://img.shields.io/conda/vn/conda-forge/ipywidgets-jsonschema.svg)](https://anaconda.org/conda-forge/ipywidgets-jsonschema)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ssciwr/ipywidgets-jsonschema/main?labpath=demo%2Fdemo.ipynb)
 
-## Usage
+A lightweight library that seamlessly combines Pydantic models, JSON Schema, and IPyWidgets to generate interactive, schema‐driven forms in Jupyter notebooks. Define your data models with Pydantic (or raw JSON Schema), and this package will produce validated, dynamic widgets for editing, validation, and serialization.
 
-![Minimum usage exmaple](https://raw.githubusercontent.com/ssciwr/ipywidgets-jsonschema/main/ipywidgets-jsonschema.gif)
-
-This project allows you to generate Jupyter widgets from schemas
-that follow the [JSONSchema specification](https://json-schema.org). If you already have
-a schema available, creating a widget form for it is as simple
-as this:
-
-
-```
-from ipywidgets_jsonschema import Form
-form = Form(schema)
-form.show()
-```
-
-The data can then be retrieved from `form` by accessing `form.data`.
+---
 
 ## Features
 
-These are the core features:
+- **Automatic Widget Generation:** Convert any JSON Schema or Pydantic model into a fully interactive IPyWidgets form.  
+- **Pydantic Integration:** Leverage Pydantic’s data validation, typing, and JSON Schema generation.  
+- **Nested Structures:** Support for nested objects, arrays, dictionaries, enums, unions, and optional fields.  
+- **Schema‐Driven Validation:** Constraints like `minimum`, `maximum`, `regex`, `pattern`, and `enum` are enforced at the widget level.  
+- **Layout & Theming Options:** Customize label placement (above or beside inputs), use sliders for numeric fields, pre‐construct array entries, and toggle descriptions.  
+- **Inline Editing UI:** The `PydanticEditorMixin` wraps Pydantic models with an “Edit → Save/Cancel” toolbar for in‐place modifications.  
+- **JSON Schema Draft 2020-12 Compliance:** Schemas are generated using Pydantic’s built-in support, adhering to the latest draft.  
+- **Lightweight & Notebook-Friendly:** No heavyweight dependencies—pure IPyWidgets, Pydantic, and standard Python libraries.
 
-* Generation of `ipywidgets` widgets for all basic types
-* Read and write access to the current document state
+---
+
+![Minimum usage exmaple]()
 
 ## Installation
 
@@ -45,13 +39,40 @@ Alternatively, you can get it from `conda-forge`:
 conda install -c conda-forge ipywidgets-jsonschema
 ```
 
-## Known limitations
+## Quick Start
 
-* Some aspects of the JSON Schema specification are hard to implement in
-  a form generator and are therefore omitted e.g.
-  * The `allOf` and `not` rules for schema composition are only partially or not at all supported.
-  * Media types
-  * There is only rudimentary support for conditional subschemas (like `if`-`then`-`else`)
-* Some annotations that are purely optional in the specification are required
-  for the schema to be usable with `ipywidgets-jsonschema` e.g. a `title` field
-  when the resulting widget would otherwise not be self-explanatory.
+```
+from pydantic import BaseModel, Field
+from ipywidgets_jsonschema import Form
+
+class Person(BaseModel):
+    name: str = Field(..., description="Your full name")
+    age: int = Field(..., ge=0, description="Your age in years")
+    email: str = Field(None, description="Optional email")
+
+form = Form(Person)
+form.show()
+
+# Interact with the form in Jupyter; retrieve validated data:
+print(form.data)  # e.g. {"name": "Alice", "age": 30, "email": "alice@example.com"}
+```
+
+That’s it—your Pydantic model is now an interactive form. For more advanced examples (nested models, enums, unions, customization), see the Documentation.
+
+## Testing
+
+```
+git clone https://github.com/ssciwr/ipywidgets-jsonschema.git
+cd ipywidgets-jsonschema
+pip install -r requirements-dev.txt
+pytest --disable-warnings --maxfail=1 --cov=ipywidgets_jsonschema
+```
+
+## Contributing
+
+Please check out Contributing page on the Docs for guidelines on how to contribute, coding style, and best practices. We follow Black for formatting, Flake8 for linting, and MyPy for type checking.
+
+## License
+
+Released under the MIT License. See [LICENSE](https://github.com/ssciwr/ipywidgets-jsonschema/blob/main/LICENSE.md) for details.
+
