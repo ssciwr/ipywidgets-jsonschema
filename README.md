@@ -23,7 +23,7 @@ A lightweight library that seamlessly combines Pydantic models, JSON Schema, and
 
 ---
 
-![Minimum usage exmaple]()
+![Minimum usage exmaple](https://github.com/Suraj3620/ipywidgets-jsonschema/blob/demo/ipywidgets-jsonschema.gif)
 
 ## Installation
 
