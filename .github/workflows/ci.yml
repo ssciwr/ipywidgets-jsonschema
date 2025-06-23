@@ -15,7 +15,7 @@ on:
 jobs:
   testing:
     name: Unit Testing (Python ${{ matrix.python }}, ipywidgets${{ matrix.ipywidgets }})
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python:
