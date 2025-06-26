@@ -1,3 +1,5 @@
+.DS_Store
+
 # setuptools_scm provided version file
 ipywidgets_jsonschema/_version.py
 
