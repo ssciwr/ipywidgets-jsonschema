@@ -9,7 +9,7 @@ on:
 jobs:
   pypi-deploy:
     name: Deploying Python Package
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     permissions:
       id-token: write
 
