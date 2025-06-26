@@ -1,9 +1,23 @@
 {
-    "type": "object",
-    "properties": {
-      "name": { "type": "string", "title": "Name" },
-      "age": { "type": "integer", "title": "Age", "minimum": 0, "maximum": 120 },
-      "is_active": { "type": "boolean", "title": "Active" }
+  "properties": {
+    "age": {
+      "maximum": 120,
+      "minimum": 0,
+      "title": "Age",
+      "type": "integer"
     },
-    "required": [ "name", "age" ]
-  }
+    "is_active": {
+      "title": "Active",
+      "type": "boolean"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "age"
+  ],
+  "type": "object"
+}

@@ -43,5 +43,5 @@ When developing and testing inside a Jupyter notebook, enable autoreload so code
         %load_ext autoreload
         %autoreload 2
 
-You only need to run this once per notebook session. 
+You only need to run this once per notebook session.
 Now you can edit files like ``ipywidgets_jsonschema/form.py``, and the updated code will take effect on the next cell execution.

@@ -12,13 +12,13 @@ A lightweight library that seamlessly combines Pydantic models, JSON Schema, and
 
 ## Features
 
-- **Automatic Widget Generation:** Convert any JSON Schema or Pydantic model into a fully interactive IPyWidgets form.  
-- **Pydantic Integration:** Leverage Pydantic’s data validation, typing, and JSON Schema generation.  
-- **Nested Structures:** Support for nested objects, arrays, dictionaries, enums, unions, and optional fields.  
-- **Schema‐Driven Validation:** Constraints like `minimum`, `maximum`, `regex`, `pattern`, and `enum` are enforced at the widget level.  
-- **Layout & Theming Options:** Customize label placement (above or beside inputs), use sliders for numeric fields, pre‐construct array entries, and toggle descriptions.  
-- **Inline Editing UI:** The `PydanticEditorMixin` wraps Pydantic models with an “Edit → Save/Cancel” toolbar for in‐place modifications.  
-- **JSON Schema Draft 2020-12 Compliance:** Schemas are generated using Pydantic’s built-in support, adhering to the latest draft.  
+- **Automatic Widget Generation:** Convert any JSON Schema or Pydantic model into a fully interactive IPyWidgets form.
+- **Pydantic Integration:** Leverage Pydantic’s data validation, typing, and JSON Schema generation.
+- **Nested Structures:** Support for nested objects, arrays, dictionaries, enums, unions, and optional fields.
+- **Schema‐Driven Validation:** Constraints like `minimum`, `maximum`, `regex`, `pattern`, and `enum` are enforced at the widget level.
+- **Layout & Theming Options:** Customize label placement (above or beside inputs), use sliders for numeric fields, pre‐construct array entries, and toggle descriptions.
+- **Inline Editing UI:** The `PydanticEditorMixin` wraps Pydantic models with an “Edit → Save/Cancel” toolbar for in‐place modifications.
+- **JSON Schema Draft 2020-12 Compliance:** Schemas are generated using Pydantic’s built-in support, adhering to the latest draft.
 - **Lightweight & Notebook-Friendly:** No heavyweight dependencies—pure IPyWidgets, Pydantic, and standard Python libraries.
 
 ---
