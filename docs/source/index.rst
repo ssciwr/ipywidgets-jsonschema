@@ -34,7 +34,7 @@ ipywidgets-jsonschema Documentation
    How-To Guides <how-to/index>
    Examples <examples/index>
    Notebooks <notebooks>
-   API Reference <api>
+   API Reference <api/index>
    Developer Guide <developing>
    Testing <testing>
    Code Quality <code-quality>
@@ -42,7 +42,6 @@ ipywidgets-jsonschema Documentation
    Architecture <architecture>
    Issues <issues>
    Changelog <changelog>
-
 
 Indices and tables
 ==================

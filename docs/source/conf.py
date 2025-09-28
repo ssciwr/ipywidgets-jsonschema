@@ -55,3 +55,25 @@ html_theme_options = {
     "titles_only": False,
 }
 language = "English"
+
+# --- nbsphinx: show a banner that these are static, non-interactive renders
+nbsphinx_prolog = r"""
+.. raw:: html
+
+   <div class="admonition warning">
+     <p><strong>Note:</strong> This page renders a Jupyter notebook <em>statically</em> on ReadTheDocs.
+     Widgets, buttons and editors are non-functional here. To interact, run the notebook locally in Jupyter.</p>
+   </div>
+"""
+
+autodoc_default_options = {
+    "members": True,
+    "inherited-members": True,
+    "member-order": "bysource",
+    "special-members": "__init__",   # include constructor params
+}
+autodoc_typehints = "description"
+napoleon_google_docstring = True
+napoleon_numpy_docstring = True
+
+
