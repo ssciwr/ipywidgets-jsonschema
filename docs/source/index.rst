@@ -29,19 +29,10 @@ ipywidgets-jsonschema Documentation
    :caption: Contents:
 
    Overview <about>
-   Installation <installation>
-   Quickstart <usage>
-   How-To Guides <how-to/index>
-   Examples <examples/index>
+   Installation <installation>   
    Notebooks <notebooks>
-   API Reference <api>
-   Developer Guide <developing>
-   Testing <testing>
-   Code Quality <code-quality>
-   Contributing <contributing>
-   Architecture <architecture>
-   Issues <issues>
-   Changelog <changelog>
+   User API Reference <api>
+   developer-guide/index
 
 
 Indices and tables
