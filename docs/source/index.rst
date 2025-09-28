@@ -30,10 +30,21 @@ ipywidgets-jsonschema Documentation
 
    Overview <about>
    Installation <installation>   
-   Notebooks <notebooks>
-   User API Reference <api>
-   developer-guide/index
+   Usage Guide <usage-guide>
 
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference:
+
+   User API <api>
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Development:
+
+   developer-guide/index
 
 Indices and tables
 ==================
