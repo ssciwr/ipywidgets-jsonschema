@@ -29,19 +29,22 @@ ipywidgets-jsonschema Documentation
    :caption: Contents:
 
    Overview <about>
-   Installation <installation>
-   Quickstart <usage>
-   How-To Guides <how-to/index>
-   Examples <examples/index>
-   Notebooks <notebooks>
-   API Reference <api/index>
-   Developer Guide <developing>
-   Testing <testing>
-   Code Quality <code-quality>
-   Contributing <contributing>
-   Architecture <architecture>
-   Issues <issues>
-   Changelog <changelog>
+   Installation <installation>   
+   Usage Guide <usage-guide>
+
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference:
+
+   User API <api>
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Development:
+
+   developer-guide/index
 
 Indices and tables
 ==================
