@@ -45,10 +45,3 @@ ipywidgets-jsonschema Documentation
    :caption: Development:
 
    developer-guide/index
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
