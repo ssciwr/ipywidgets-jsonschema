@@ -1,7 +1,7 @@
 .. _api:
 
 User API Reference
-=============
+==================
 
 .. autoclass:: ipywidgets_jsonschema.form.Form
    :members:

@@ -2,13 +2,12 @@ Developer Guide
 ===============
 
 .. toctree::
-    :maxdepth: 2
+   :maxdepth: 2
 
-    
+   Developing <developing>
    Contributing <contributing>
    Code Quality <code-quality>
    Testing <testing>
    Architecture <architecture>
    Issues <issues>
-   Changelog <changelog>
    Developer API Reference <developer-api>

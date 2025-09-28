@@ -43,7 +43,7 @@ extensions = [
 autosummary_generate = True
 nbsphinx_allow_errors = True  # continue build even if notebook errors
 autoclass_content = "both"
-autodoc_typehints = "all"
+autodoc_typehints = "description"
 napoleon_include_init_with_doc = True
 html_theme = "sphinx_rtd_theme"  # Set the theme
 html_static_path = ["_static"]
@@ -56,7 +56,7 @@ html_theme_options = {
     "includehidden": True,
     "titles_only": False,
 }
-language = "English"
+language = "en"
 
 
 
