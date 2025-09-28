@@ -55,3 +55,13 @@ html_theme_options = {
     "titles_only": False,
 }
 language = "English"
+
+
+
+nbsphinx_prolog = r"""
+.. note::
+    **This page shows a static render of a Jupyter Notebook.**
+    Interactive features (widgets, buttons) are disabled on Read the Docs.
+    Run the notebook locally for full interactivity.
+
+"""
