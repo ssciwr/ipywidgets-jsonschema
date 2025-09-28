@@ -72,10 +72,8 @@ autodoc_default_options = {
     "members": True,
     "inherited-members": True,
     "member-order": "bysource",
-    "special-members": "__init__",   # include constructor params
+    "special-members": "__init__",  # include constructor params
 }
 autodoc_typehints = "description"
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
-
-

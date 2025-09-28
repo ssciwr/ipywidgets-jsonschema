@@ -278,7 +278,9 @@ class Form:
                         )
                     type_ = format_.replace("-", "_")
 
-            result = getattr(self, f"_construct_{type_}")(schema, label=label, root=root)
+            result = getattr(self, f"_construct_{type_}")(
+                schema, label=label, root=root
+            )
             return result
 
     def _wrap_accordion(self, widget_list, schema, label=None):

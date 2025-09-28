@@ -29,7 +29,7 @@ ipywidgets-jsonschema Documentation
    :caption: Contents:
 
    Overview <about>
-   Installation <installation>   
+   Installation <installation>
    Usage Guide <usage-guide>
 
 
