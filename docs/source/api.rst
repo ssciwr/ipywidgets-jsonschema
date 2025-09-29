@@ -1,27 +1,16 @@
 .. _api:
 
-API Reference
-=============
+User API Reference
+==================
 
-.. automodule:: ipywidgets_jsonschema.form
+.. autoclass:: ipywidgets_jsonschema.form.Form
    :members:
-   :undoc-members:
+   :inherited-members:
    :show-inheritance:
+   :special-members: __init__
 
-.. autoclass:: ipywidgets_jsonschema.form.FormElement
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: ipywidgets_jsonschema.form.FormError
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 .. autoclass:: ipywidgets_jsonschema.PydanticEditorMixin
    :members:
-   :undoc-members:
    :show-inheritance:
-
-.. autofunction:: ipywidgets_jsonschema.form.convert_pydantic_to_schema
-.. autofunction:: ipywidgets_jsonschema.form.deep_update_missing
+   :special-members: __init__

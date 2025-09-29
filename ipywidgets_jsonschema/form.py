@@ -14,6 +14,7 @@ import re
 import traitlets
 import collections.abc
 from pydantic import BaseModel
+from contextlib import contextmanager  # <-- added
 
 # We are providing some compatibility for ipywidgets v7 and v8
 IS_VERSION_8 = version.parse(ipywidgets.__version__).major == 8
@@ -159,6 +160,15 @@ class Form:
         # Construct the widgets
         self._form_element = self._construct(schema, root=True, label=None)
 
+    @contextmanager
+    def _push_schema(self, schema):
+        self._construction_stack.append(schema)
+        try:
+            yield
+        finally:
+            # Always pop, even if a branch returns early or raises.
+            self._construction_stack.pop()
+
     def construct_element(
         self,
         getter=lambda: None,
@@ -219,56 +229,59 @@ class Form:
         self._form_element.setter(_data)
 
     def _construct(self, schema, label=None, root=False):
-        if schema in self._construction_stack and not (
+        if any(schema is s for s in self._construction_stack) and not (
             "$ref" in schema or "enum" in schema
         ):
             return self.construct_element()
-        self._construction_stack.append(schema)
 
-        # Enumerations are handled a dropdowns
-        if "enum" in schema:
-            return self._construct_enum(schema, label=label)
+        # Everything inside guaranteed push/pop
+        with self._push_schema(schema):
 
-        # anyOf rules are handled with dropdown selections
-        if "anyOf" in schema:
-            return self._construct_anyof(schema, label=label)
+            # Enumerations are handled a dropdowns
+            if "enum" in schema:
+                return self._construct_enum(schema, label=label)
 
-        # We use the same code for oneOf and allOf - if the data cannot be validated,
-        # a validation error will be thrown when accessing the data. There is no
-        # upfront checking in the form.
-        if "oneOf" in schema:
-            return self._construct_anyof(schema, label=label, key="oneOf")
-        if "allOf" in schema:
-            return self._construct_anyof(schema, label=label, key="allOf")
+            # anyOf rules are handled with dropdown selections
+            if "anyOf" in schema:
+                return self._construct_anyof(schema, label=label)
 
-        # Handle other input based on the input type
-        type_ = schema.get("type", None)
-        if type_ is None:
-            if "$ref" in schema:
-                return self._construct_ref(schema, label=label)
-            raise FormError(
-                f"Expecting type information for non-enum properties, schema: {schema}"
+            # We use the same code for oneOf and allOf - if the data cannot be validated,
+            # a validation error will be thrown when accessing the data. There is no
+            # upfront checking in the form.
+            if "oneOf" in schema:
+                return self._construct_anyof(schema, label=label, key="oneOf")
+            if "allOf" in schema:
+                return self._construct_anyof(schema, label=label, key="allOf")
+
+            # Handle other input based on the input type
+            type_ = schema.get("type", None)
+            if type_ is None:
+                if "$ref" in schema:
+                    return self._construct_ref(schema, label=label)
+                raise FormError(
+                    f"Expecting type information for non-enum properties, schema: {schema}"
+                )
+            if not isinstance(type_, str):
+                raise FormError("Not accepting arrays of types currently")
+
+            # Maybe this is using a built-in format
+            format_ = schema.get("format", None)
+            if format_ is not None:
+                if (
+                    (IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_8)
+                    or (not IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_7)
+                    or (format_ in STRING_FORMATS)
+                ):
+                    if format_ in REGEX_DICT:
+                        return self._construct_format(
+                            schema, REGEX_DICT[format_], label, root=root
+                        )
+                    type_ = format_.replace("-", "_")
+
+            result = getattr(self, f"_construct_{type_}")(
+                schema, label=label, root=root
             )
-        if not isinstance(type_, str):
-            raise FormError("Not accepting arrays of types currently")
-
-        # Maybe this is using a built-in format
-        format_ = schema.get("format", None)
-        if format_ is not None:
-            if (
-                (IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_8)
-                or (not IS_VERSION_8 and format_ in SUPPORTED_FORMATS_VERSION_7)
-                or (format_ in STRING_FORMATS)
-            ):
-                if format_ in REGEX_DICT:
-                    return self._construct_format(
-                        schema, REGEX_DICT[format_], label, root=root
-                    )
-                type_ = format_.replace("-", "_")
-
-        result = getattr(self, f"_construct_{type_}")(schema, label=label, root=root)
-        self._construction_stack.pop()
-        return result
+            return result
 
     def _wrap_accordion(self, widget_list, schema, label=None):
         titles = []
@@ -500,9 +513,7 @@ class Form:
         additional_props_schema = schema["additionalProperties"]
 
         # container for the input widgets
-
         widget = ipywidgets.VBox([])
-
         elements = []  # list of widgets corresponding to each key
 
         def _update_widget():
@@ -516,17 +527,40 @@ class Form:
 
             elem_dict = self._construct(additional_props_schema)
 
+            # If an initial value was provided (e.g., via setter), apply it
+            if value is not None:
+                try:
+                    elem_dict.setter(value)
+                except Exception:
+                    # best-effort; ignore if it doesn't fit selected schema yet
+                    pass
+
             trash = ipywidgets.Button(icon="trash")
 
             def remove_entry(_):
-                # Identify the current list index of the entry
+                # Identify the current list index of the entry.
+                # Each child is a VBox([HBox([key_widget, VBox(elem.widgets), trash])])
+                idx = None
                 for index, child in enumerate(widget.children):
-                    if trash in child.children:
-                        break
+                    if not child.children:
+                        continue
+                    inner = child.children[0]
+                    if isinstance(inner, ipywidgets.HBox):
+                        if trash in getattr(inner, "children", []):
+                            idx = index
+                            break
+                    else:
+                        # fallback if structure differs
+                        try:
+                            if trash in child.children:
+                                idx = index
+                                break
+                        except Exception:
+                            pass
+                if idx is None:
+                    return
 
-                elements.pop(index)
-
-                # Remove it from the widget list and the handler list
+                elements.pop(idx)
                 _update_widget()
 
             trash.on_click(remove_entry)
@@ -535,7 +569,6 @@ class Form:
                 return {key_widget.value: elem_dict.getter()}
 
             def _dict_setter(_dict):
-
                 if key_widget.value in _dict:
                     elem_dict.setter(_dict[key_widget.value])
                 else:
@@ -565,15 +598,13 @@ class Form:
         widget_list = [widget, add_btn]
 
         def _getter():
-
             data = {}
             for e in elements:
                 data.update(e.getter())
-
             return data
 
         def _setter(_d):
-
+            # update existing rows
             for e in elements:
                 key = list(e.getter().keys())[0]
                 if key in _d:
@@ -581,11 +612,10 @@ class Form:
                 else:
                     e.resetter()
 
-            # check for keys that need to added
-            keys = [list(e.getter().keys())[0] for e in elements]
+            # add any missing keys
+            existing_keys = [list(e.getter().keys())[0] for e in elements]
             for key, value in _d.items():
-
-                if key not in keys:
+                if key not in existing_keys:
                     add_dict_entry(key=key, value=value)
 
         def _register_observer(h, n, t):

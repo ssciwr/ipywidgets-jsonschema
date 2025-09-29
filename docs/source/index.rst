@@ -30,23 +30,18 @@ ipywidgets-jsonschema Documentation
 
    Overview <about>
    Installation <installation>
-   Quickstart <usage>
-   How-To Guides <how-to/index>
-   Examples <examples/index>
-   Notebooks <notebooks>
-   API Reference <api>
-   Developer Guide <developing>
-   Testing <testing>
-   Code Quality <code-quality>
-   Contributing <contributing>
-   Architecture <architecture>
-   Issues <issues>
-   Changelog <changelog>
+   Usage Guide <usage-guide>
 
 
-Indices and tables
-==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference:
+
+   User API <api>
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Development:
+
+   developer-guide/index

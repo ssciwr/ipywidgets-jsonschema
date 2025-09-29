@@ -30,6 +30,3 @@ This design keeps things simple and centralized, but comes with some tradeoffs:
 
 
 - Makes future refactoring more complex
-
-Future improvements
--------------------

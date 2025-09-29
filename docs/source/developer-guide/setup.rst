@@ -1,4 +1,4 @@
-Development - Getting started
+Getting started
 =============================
 
 This page explains how to set up the development environment for working on ``ipywidgets-jsonschema``. The goal is to make editing, testing, and experimenting as fast and frictionless as possible.
