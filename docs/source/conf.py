@@ -1,79 +1,71 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
-
-# -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-
-# -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
 import os
+import shutil
 import sys
 from pathlib import Path
 
-sys.path.insert(
-    0, str(Path(__file__).resolve().parent.parent / "ipywidgets_jsonschema")
-)
+sys.path.insert(0, os.path.abspath("../.."))
 
 project = "ipywidgets-jsonschema"
-copyright = "2025, Suraj Desai and Mangkonthong Virasith"
-version = "0.1.0"
-release = "0.1.0"
+author = "ipywidgets-jsonschema contributors"
+
+try:
+    from ipywidgets_jsonschema import __version__
+except Exception:
+    __version__ = "unknown"
+
+release = __version__
+version = __version__
 
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.napoleon",  # Support Google-style docstrings
-    "sphinx.ext.doctest",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.todo",
-    "sphinx.ext.coverage",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.ifconfig",
-    "sphinx.ext.viewcode",
-    "sphinx.ext.githubpages",
+    "sphinx.ext.napoleon",
     "nbsphinx",
 ]
 
-autosummary_generate = True
-nbsphinx_allow_errors = True  # continue build even if notebook errors
-autoclass_content = "both"
+autodoc_member_order = "bysource"
 autodoc_typehints = "description"
-napoleon_include_init_with_doc = True
-html_theme = "sphinx_rtd_theme"  # Set the theme
-html_static_path = ["_static"]
+
 templates_path = ["_templates"]
-html_theme_options = {
-    # Toc options
-    "collapse_navigation": True,
-    "sticky_navigation": True,
-    "navigation_depth": 4,
-    "includehidden": True,
-    "titles_only": False,
-}
-language = "English"
+exclude_patterns = ["_build", "**.ipynb_checkpoints"]
 
-# --- nbsphinx: show a banner that these are static, non-interactive renders
-nbsphinx_prolog = r"""
-.. raw:: html
+html_theme = "furo"
+html_title = "ipywidgets-jsonschema"
+html_static_path = ["_static"]
+html_css_files = [
+    # ipywidgets button icons (icon="...") require Font Awesome classes.
+    # We vend these files into _static during the Sphinx build.
+    "fontawesomefree/css/all.min.css",
+]
 
-   <div class="admonition warning">
-     <p><strong>Note:</strong> This page renders a Jupyter notebook <em>statically</em> on ReadTheDocs.
-     Widgets, buttons and editors are non-functional here. To interact, run the notebook locally in Jupyter.</p>
-   </div>
-"""
+# Execute notebooks during docs builds (including Read the Docs)
+nbsphinx_execute = "always"
+nbsphinx_timeout = 120
 
-autodoc_default_options = {
-    "members": True,
-    "inherited-members": True,
-    "member-order": "bysource",
-    "special-members": "__init__",  # include constructor params
-}
-autodoc_typehints = "description"
-napoleon_google_docstring = True
-napoleon_numpy_docstring = True
+master_doc = "index"
+
+
+def _copy_fontawesome_assets(_app):
+    """Copy Font Awesome CSS/webfonts into docs/_static for self-contained builds."""
+    try:
+        import fontawesomefree
+    except ImportError as exc:
+        raise RuntimeError(
+            "fontawesomefree is required for docs builds. "
+            "Install docs requirements before building."
+        ) from exc
+
+    package_root = Path(fontawesomefree.__file__).resolve().parent
+    source_root = package_root / "static" / "fontawesomefree"
+    target_root = Path(__file__).resolve().parent / "_static" / "fontawesomefree"
+
+    (target_root / "css").mkdir(parents=True, exist_ok=True)
+    shutil.copy2(
+        source_root / "css" / "all.min.css", target_root / "css" / "all.min.css"
+    )
+    shutil.copytree(
+        source_root / "webfonts", target_root / "webfonts", dirs_exist_ok=True
+    )
+
+
+def setup(app):
+    app.connect("builder-inited", _copy_fontawesome_assets)

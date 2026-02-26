@@ -1,11 +1,12 @@
-Tutorials
-=========
+Usage Guide
+===========
 
-Explore our tutorial notebooks rendered via **nbsphinx**:
+This section provides focused examples as separate notebook-backed pages.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Tutorials:
+   :maxdepth: 1
 
-   guide.ipynb
-
+   usage/form-from-jsonschema
+   usage/form-from-pydantic-models
+   usage/inline-editing-with-pydanticeditormixin
+   usage/comprehensive-capabilities-overview

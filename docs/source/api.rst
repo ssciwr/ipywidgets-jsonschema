@@ -1,16 +1,17 @@
-.. _api:
+API Documentation
+=================
 
-User API Reference
-==================
+This reference is generated from docstrings for the public API exposed in
+``ipywidgets_jsonschema/__init__.py``.
 
-.. autoclass:: ipywidgets_jsonschema.form.Form
-   :members:
-   :inherited-members:
-   :show-inheritance:
-   :special-members: __init__
+.. currentmodule:: ipywidgets_jsonschema
 
-
-.. autoclass:: ipywidgets_jsonschema.PydanticEditorMixin
+.. autoclass:: Form
    :members:
    :show-inheritance:
-   :special-members: __init__
+   :member-order: bysource
+
+.. autoclass:: PydanticEditorMixin
+   :members:
+   :show-inheritance:
+   :member-order: bysource
