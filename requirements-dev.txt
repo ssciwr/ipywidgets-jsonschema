@@ -1,4 +1,5 @@
 nbval
 pre-commit
+pydantic
 pyrsistent
 pytest

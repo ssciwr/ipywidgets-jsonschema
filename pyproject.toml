@@ -26,7 +26,6 @@ dependencies = [
     "jsonschema<5",
     "packaging",
     "traitlets",
-    "pydantic",
 ]
 
 [tool.setuptools]

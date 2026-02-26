@@ -1,4 +1,3 @@
-import copy
 import datetime
 
 from IPython.display import display
@@ -8,13 +7,15 @@ import collections
 import ipywidgets
 import jsonschema
 from jsonschema.validators import Draft7Validator
-import json
-import os
 import re
 import traitlets
 import collections.abc
-from pydantic import BaseModel
-from contextlib import contextmanager  # <-- added
+from contextlib import contextmanager
+
+try:
+    import pydantic
+except ImportError:
+    pydantic = None
 
 # We are providing some compatibility for ipywidgets v7 and v8
 IS_VERSION_8 = version.parse(ipywidgets.__version__).major == 8
@@ -56,8 +57,12 @@ def convert_pydantic_to_schema(model) -> dict:
     """
     Converts a Pydantic model class to its corresponding JSON schema.
     """
-    if isinstance(model, type) and issubclass(model, BaseModel):
+    if pydantic is None:
+        return model
+
+    if isinstance(model, type) and issubclass(model, pydantic.BaseModel):
         return model.model_json_schema()
+
     return model
 
 
